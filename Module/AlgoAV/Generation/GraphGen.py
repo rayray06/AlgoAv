@@ -7,48 +7,102 @@ Created on Mon Jun 13 12:20:54 2022
 import numpy as np
 import copy
 from typing import List
+from collections import deque
 
 
-def ConexionCheck(Mat: List[List[int]],Curindex: int,nVille: int,Visited: List[int]) -> bool :
+def ExistChemin(matriceAdj: List[List[bool]], u: int, v: int) -> bool :
     """
-    Check if a given graph is connected or not using recursion
+    
 
     Parameters
     ----------
-    Mat : List[List[int]]
-        Adjacense array to check.
-    Curindex : int
-        The current node visited.
-    nVille : int
-        the number of city in the graph.
-    Visited : List[int]
-        the list of already visited cities.
+    matriceAdj : List[List[int]]
+        DESCRIPTION.
+    u : int
+        DESCRIPTION.
+    v : int
+        DESCRIPTION.
 
     Returns
     -------
     bool 
-        Return if the graph is connected or not.
-
+        DESCRIPTION.
+    
+    @authors : Charlie, Valentin, Dylan
     """
-    Visited[Curindex] = 1
-    for i in range(nVille):
-        Mat[i,Curindex] = 0
-    for i in range(nVille):
-        if Mat[Curindex,i] == 1:
-            ConexionCheck(Mat,i,nVille,Visited)
-    return sum(Visited) == nVille
+    n = len(matriceAdj)  # nombre de sommets dans le graphe
+    file = deque()
+    visites = [False] * n
+    # ajouter le premier sommet à la file d'attente
+    file.append(u)
+    while file:
+        # supprimer le sommet supérieur de la pile et marqué comme visité
+        courant = file.pop()
+        visites[courant] = True
+ 
+        # visiter les sommets adjacents
+        for i in range(n):
+            # Il existe un chemin de u à i(v)
+            if matriceAdj[courant,i] > 0:
+            # Si le sommet i est le sommet voulu (i = v)
+                if i == v:
+                    return True
+                # le sommet i n'est pas encore visité
+                elif not(visites[i]):
+                    file.append(i)
+                    # ajouter i à la file marqué comme visité
+                    visites[i] = True
+    return False
+ 
+    
+def connecte(matriceAdj: List[List[bool]]) -> bool:
+    """
+    
+
+    Parameters
+    ----------
+    matriceAdj : List[List[bool]]
+        DESCRIPTION.
+
+    Returns
+    -------
+    bool
+        DESCRIPTION.
+    @authors : Charlie, Valentin, Dylan
+    """
+    n = len(matriceAdj)  # nombre de sommets
+    for i in range(1,n):
+        if not(ExistChemin(matriceAdj, 0, i)):
+                return False    
+    return True
 
 def GraphGen(nVille: int) -> List[List[int]]:
-    MatriceValid = False
+    """
+    Function used to generate the adjacence array from a connected non oriented graph of nVille cities
+
+    Parameters
+    ----------
+    nVille : int
+        Number of cities wanted for our graph.
+
+    Returns
+    -------
+    List[List[int]]
+        Adjacence array of said graph.
+
+    """
+    MatriceValid = False # Initialised the fact that the Array is yet to generate
+    b_symm = [[False]*nVille for _ in range(nVille)] #Initialised sure to be invalid array
     while(not(MatriceValid)):
-        Mat = np.random.choice((True, False), size=(nVille,nVille), p=[0.3, 0.7])
+        Mat = np.random.choice((True, False), size=(nVille,nVille), p=[0.3, 0.7]) #Creation of a random array
         
-        # on fait le `ou` logique de la matrice et de sa transposée
+        # we do the or operation with the trasposition to create symmetry
         b_symm = np.logical_or(Mat, Mat.T)
         
-        for i in range(nVille):
+        for i in range(nVille):#We set the diagnonal to false to prohib loop back to itself
             b_symm[i,i] = False
-        MatriceValid = ConexionCheck(copy.deepcopy(b_symm),0,nVille,np.zeros(nVille , dtype=np.int64))
-    # on renvoie la matrice de booléens convertie en matrice d'entiers
+        
+        MatriceValid = connecte(b_symm) #We check if the graph is connected
+    # We return the array in array of integers
     return b_symm.astype(int)
 
