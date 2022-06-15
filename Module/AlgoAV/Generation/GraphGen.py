@@ -6,6 +6,7 @@ Created on Mon Jun 13 12:20:54 2022
 """
 import numpy as np
 import copy
+import random
 from typing import List
 from collections import deque
 
@@ -111,4 +112,33 @@ def GraphGen(nVille: int) -> List[List[int]]:
     # We return the array in array of integers
     return b_symm.astype(int)
 
-print(GraphGen(10))
+def WeigthSet(MatAdj:List[List[int]],nVille:int,seed:int,maxWeigth:float) -> List[List[float]]:
+    """
+    
+    Set a given adjacence array as Weigthed
+    Parameters
+    ----------
+    MatAdj : List[List[int]]
+        Corresponding adjacence array
+    nVille : int
+        Number of cities of the array
+    seed : int
+        Seed use to generate array
+    maxWeigth : float
+        MaxWeigth for graph
+
+    Returns
+    -------
+    List[List[float]]
+        Weigth Array.
+    @ray-h
+    """
+    Matrice_Final = MatAdj.astype(float)
+    
+    random.seed(a=seed)
+    for i in range(nVille):
+        for j in range(i):
+            Matrice_Final[i,j] *= 1 + random.random() * maxWeigth
+            Matrice_Final[i,j] = Matrice_Final[j,i]
+    return Matrice_Final
+    
