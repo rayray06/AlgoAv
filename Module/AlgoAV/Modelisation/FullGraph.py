@@ -74,7 +74,7 @@ def Djiska(WGraph:List[List[float]],nVille:int, u:int , v:int) -> Tuple[float,De
         Path.appendleft(cur)
     return (DistStart[v],Path)
 
-def SetFullGraph(ListDeli:[int],nVille:int,WGraph : List[List[float]]): 
+def SetFullGraph(ListDeli:[int],nVille:int,WGraph : List[List[float]]) -> Tuple[List[List[Deque[int]]],List[List[float]]] : 
     """
     Create a complete Graph corresponding to the given incomplete graph 
 
@@ -89,9 +89,9 @@ def SetFullGraph(ListDeli:[int],nVille:int,WGraph : List[List[float]]):
 
     Returns
     -------
-    EquivArray : TYPE
+    EquivArray : List[List[Deque[int]]]
         The transformation array from the direct path from the full graph to the true path for the ADEME probleme.
-    WIntGraph : TYPE
+    WIntGraph : List[List[float]]
         Weigthed graph of the full graph.
 
     """
