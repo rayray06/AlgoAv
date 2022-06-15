@@ -13,23 +13,21 @@ from collections import deque
 
 def ExistChemin(matriceAdj: List[List[bool]], u: int, v: int) -> bool :
     """
-    Check if a way exist between two vertex
-
+    
 
     Parameters
     ----------
-     matriceAdj : List[List[bool]]
-        The matrix generated
+    matriceAdj : List[List[int]]
+        DESCRIPTION.
     u : int
-        the vertex on the x-axis
+        DESCRIPTION.
     v : int
-        the vertex on the y-axis
+        DESCRIPTION.
 
     Returns
     -------
     bool 
-    Return if a way exist or not between two vertex
-
+        DESCRIPTION.
     
     @authors : Charlie, Valentin, Dylan
     """
@@ -62,18 +60,15 @@ def connecte(matriceAdj: List[List[bool]]) -> bool:
     """
     
 
-     Check if the graph is connected
-
     Parameters
     ----------
     matriceAdj : List[List[bool]]
-        The matrix generated
+        DESCRIPTION.
 
     Returns
     -------
-    Bool 
-        Return if the generated matrix is connected or not
-
+    bool
+        DESCRIPTION.
     @authors : Charlie, Valentin, Dylan
     """
     n = len(matriceAdj)  # nombre de sommets
@@ -138,7 +133,9 @@ def WeigthSet(MatAdj:List[List[int]],nVille:int,seed:int,maxWeigth:float) -> Lis
     random.seed(a=seed)
     for i in range(nVille):
         for j in range(i):
-            Matrice_Final[i,j] *= 1 + random.random() * maxWeigth
+            print(random.random())
+            Matrice_Final[j,i] *= 1 + (random.random() * maxWeigth)
             Matrice_Final[i,j] = Matrice_Final[j,i]
     return Matrice_Final
     
+print(WeigthSet(GraphGen(10),10,5,50))
