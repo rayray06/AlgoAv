@@ -12,21 +12,23 @@ from collections import deque
 
 def ExistChemin(matriceAdj: List[List[bool]], u: int, v: int) -> bool :
     """
-    
+    Check if a way exist between two vertex
+
 
     Parameters
     ----------
-    matriceAdj : List[List[int]]
-        DESCRIPTION.
+     matriceAdj : List[List[bool]]
+        The matrix generated
     u : int
-        DESCRIPTION.
+        the vertex on the x-axis
     v : int
-        DESCRIPTION.
+        the vertex on the y-axis
 
     Returns
     -------
     bool 
-        DESCRIPTION.
+    Return if a way exist or not between two vertex
+
     
     @authors : Charlie, Valentin, Dylan
     """
@@ -59,15 +61,18 @@ def connecte(matriceAdj: List[List[bool]]) -> bool:
     """
     
 
+     Check if the graph is connected
+
     Parameters
     ----------
     matriceAdj : List[List[bool]]
-        DESCRIPTION.
+        The matrix generated
 
     Returns
     -------
-    bool
-        DESCRIPTION.
+    Bool 
+        Return if the generated matrix is connected or not
+
     @authors : Charlie, Valentin, Dylan
     """
     n = len(matriceAdj)  # nombre de sommets
@@ -106,3 +111,4 @@ def GraphGen(nVille: int) -> List[List[int]]:
     # We return the array in array of integers
     return b_symm.astype(int)
 
+print(GraphGen(10))
