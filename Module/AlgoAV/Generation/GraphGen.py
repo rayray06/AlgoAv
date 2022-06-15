@@ -133,7 +133,6 @@ def WeigthSet(MatAdj:List[List[int]],nVille:int,seed:int,maxWeigth:float) -> Lis
     random.seed(a=seed)
     for i in range(nVille):
         for j in range(i):
-            print(random.random())
             Matrice_Final[j,i] *= 1 + (random.random() * maxWeigth)
             Matrice_Final[i,j] = Matrice_Final[j,i]
     return Matrice_Final
