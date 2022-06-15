@@ -95,7 +95,7 @@ def GraphGen(nVille: int) -> List[List[int]]:
     MatriceValid = False # Initialised the fact that the Array is yet to generate
     b_symm = [[False]*nVille for _ in range(nVille)] #Initialised sure to be invalid array
     while(not(MatriceValid)):
-        Mat = np.random.choice((True, False), size=(nVille,nVille), p=[0.3, 0.7]) #Creation of a random array
+        Mat = np.random.choice((True, False), size=(nVille,nVille), p=[0.1, 0.9]) #Creation of a random array
         
         # we do the or operation with the trasposition to create symmetry
         b_symm = np.logical_or(Mat, Mat.T)
@@ -137,5 +137,3 @@ def WeigthSet(MatAdj:List[List[int]],nVille:int,seed:int,maxWeigth:float) -> Lis
             Matrice_Final[j,i] *= 1 + (random.random() * maxWeigth)
             Matrice_Final[i,j] = Matrice_Final[j,i]
     return Matrice_Final
-    
-print(WeigthSet(GraphGen(10),10,5,50))
