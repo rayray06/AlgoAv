@@ -110,7 +110,7 @@ def GraphGen(nVille: int) -> List[List[int]]:
 def WeigthSet(MatAdj:List[List[int]],nVille:int,seed:int,maxWeigth:float) -> List[List[float]]:
     """
     
-
+    Set a given adjacence array as Weigthed
     Parameters
     ----------
     MatAdj : List[List[int]]
@@ -126,13 +126,14 @@ def WeigthSet(MatAdj:List[List[int]],nVille:int,seed:int,maxWeigth:float) -> Lis
     -------
     List[List[float]]
         Weigth Array.
-
+    @ray-h
     """
     Matrice_Final = MatAdj.astype(float)
     
     random.seed(a=seed)
     for i in range(nVille):
-        for j in range(nVille):
+        for j in range(i):
             Matrice_Final[i,j] *= 1 + random.random() * maxWeigth
+            Matrice_Final[i,j] = Matrice_Final[j,i]
     return Matrice_Final
     
