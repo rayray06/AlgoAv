@@ -83,16 +83,16 @@ def SetFullGraph(ListDeli:[int],nVille:int,WGraph : List[List[float]]):
     ListDeli : [int]
         List of the city to delivers need to be made unique indexes to be able to do the inverse translation
     nVille : int
-        DESCRIPTION.
+        Number of cities to process.
     WGraph : List[List[float]]
-        DESCRIPTION.
+        Weigthed array of the situation.
 
     Returns
     -------
     EquivArray : TYPE
-        DESCRIPTION.
+        The transformation array from the direct path from the full graph to the true path for the ADEME probleme.
     WIntGraph : TYPE
-        DESCRIPTION.
+        Weigthed graph of the full graph.
 
     """
     EquivArray = [[deque() for _ in range(nVille)] for _ in range(nVille)]
