@@ -14,7 +14,6 @@ class Fourmi:
     
     Alpha:float = 1
     Beta: float = 2
-    Evap : float = 0.4
     Deposit: float = 10
     
     def __init__(self,WMap,MapSize,PheromonMap,StartVertice):
@@ -22,10 +21,11 @@ class Fourmi:
         self.MapSize = MapSize
         self.PheromonMap = PheromonMap
         self.CurrentPosition = StartVertice
-        self.PathTaken = deque(StartVertice)
+        self.PathTaken = deque((StartVertice,))
         self.LengthPath = 0
+        self.Alive = True
     
-    def SetParameters(alpha:float,beta:float,Evap:float,Deposit:float):
+    def SetParameters(alpha:float,beta:float,Deposit:float):
         if alpha < 0:
             raise ValueError("alpha must be greater or equal to 0")
         elif beta < 1:
@@ -33,21 +33,22 @@ class Fourmi:
         else:
             Fourmi.Alpha=alpha
             Fourmi.Beta=beta
-            Fourmi.Evap=Evap
             
+    def Eliminate(self):
+        self.Alive = False
         
     def ChoosePath(self):
         Choices = [0]*self.MapSize
         MaxWeigth = (max(self.WMap[self.CurrentPosition])+1)*1.1
         for i in range(self.MapSize):
             if self.WMap[self.CurrentPosition][i] > 0:
-                Choices[i] = (((MaxWeigth)-self.WMap[self.CurrentPosition][i])**Fourmi.Alpha)(self.PheromonMap[self.CurrentPosition][i]**Fourmi.Beta)
+                Choices[i] = (((MaxWeigth)-self.WMap[self.CurrentPosition][i])**Fourmi.Alpha)*(self.PheromonMap[self.CurrentPosition][i]**Fourmi.Beta)
             else:
                 Choices[i] = 0
         SumChoices = sum(Choices)
         Choices[i] /= SumChoices
         
-        Choice = random.choices(range(self.MapSize),weights=Choices,k=1)
+        Choice = random.choices(range(self.MapSize),weights=Choices,k=1)[0]
         
         self.LengthPath += self.WMap[self.CurrentPosition][Choice]
         self.CurrentPosition = Choice
@@ -55,7 +56,8 @@ class Fourmi:
         
         for i in range(self.MapSize):
             self.WMap[i][Choice] = 0
-            
+        return Choice
+        
     def UpdatePheromon(self):
         Start = self.PathTaken.popleft()
         Next = self.PathTaken.popleft()

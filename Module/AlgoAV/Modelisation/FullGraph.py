@@ -107,6 +107,7 @@ def SetFullGraph(ListDeli:[int],nVille:int,WGraph : List[List[float]]) -> Tuple[
     for i in  range(nVille-1,-1,-1):
         if i not in ListDeli:
             WIntGraph.pop(i)
+            
     for i in range(len(ListDeli)):
         for j in range(nVille-1,-1,-1):
             if j not in ListDeli:
