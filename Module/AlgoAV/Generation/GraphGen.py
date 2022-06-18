@@ -7,9 +7,9 @@ Created on Mon Jun 13 12:20:54 2022
 import numpy as np
 import copy
 import random
-from typing import List
+from typing import List,Tuple
 from collections import deque
-
+from functools import lru_cache
 
 def ExistChemin(matriceAdj: List[List[bool]], u: int, v: int) -> bool :
     """
@@ -77,7 +77,8 @@ def connecte(matriceAdj: List[List[bool]]) -> bool:
                 return False    
     return True
 
-def GraphGen(nVille: int) -> List[List[int]]:
+@lru_cache()
+def GraphGen(nVille: int) -> Tuple[List[int]]:
     """
     Function used to generate the adjacence array from a connected non oriented graph of nVille cities
 
@@ -104,10 +105,14 @@ def GraphGen(nVille: int) -> List[List[int]]:
             b_symm[i,i] = False
         
         MatriceValid = connecte(b_symm) #We check if the graph is connected
+    FinalArray = b_symm.astype(int).tolist()
+    for i in range(nVille):
+        FinalArray[i] = tuple(FinalArray[i])
     # We return the array in array of integers
-    return b_symm.astype(int)
+    return tuple(FinalArray)
 
-def WeigthSet(MatAdj:List[List[int]],nVille:int,seed:int,maxWeigth:float) -> List[List[float]]:
+@lru_cache()
+def WeigthSet(MatAdj:Tuple[Tuple[int]],nVille:int,seed:int,maxWeigth:float) -> Tuple[Tuple[float]]:
     """
     
     Set a given adjacence array as Weigthed
@@ -128,11 +133,16 @@ def WeigthSet(MatAdj:List[List[int]],nVille:int,seed:int,maxWeigth:float) -> Lis
         Weigth Array.
     @ray-h
     """
-    Matrice_Final = MatAdj.astype(float)
-    
+
+    Matrice_Final = list(MatAdj)
+    for i in range(nVille):
+        Matrice_Final[i] = list(MatAdj[i])
     random.seed(a=seed)
     for i in range(nVille):
         for j in range(i):
-            Matrice_Final[j,i] *= 1 + (random.random() * maxWeigth)
-            Matrice_Final[i,j] = Matrice_Final[j,i]
+            Matrice_Final[j][i] *= 1 + (random.random() * maxWeigth)
+            Matrice_Final[i][j] = Matrice_Final[j][i]
+    for i in range(nVille):
+        Matrice_Final[i] = tuple(Matrice_Final[i])
+    Matrice_Final = tuple(Matrice_Final)
     return Matrice_Final

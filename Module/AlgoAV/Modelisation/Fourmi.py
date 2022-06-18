@@ -5,10 +5,11 @@ Created on Mon Jun 13 12:20:50 2022
 @author: ray-h
 """
 import numpy as np
+from typing import List,Tuple,Deque
 from collections import deque
 import random
 import copy
-
+from functools import lru_cache
 
 class Fourmi:
     
@@ -38,15 +39,18 @@ class Fourmi:
         self.Alive = False
         
     def ChoosePath(self):
-        Choices = [0]*self.MapSize
-        MaxWeigth = (max(self.WMap[self.CurrentPosition])+1)*1.1
+
+
+        WMapedTuple = copy.deepcopy(self.WMap)
+        PheromonTuple = copy.deepcopy(self.PheromonMap)
+
         for i in range(self.MapSize):
-            if self.WMap[self.CurrentPosition][i] > 0:
-                Choices[i] = (((MaxWeigth)-self.WMap[self.CurrentPosition][i])**Fourmi.Alpha)*(self.PheromonMap[self.CurrentPosition][i]**Fourmi.Beta)
-            else:
-                Choices[i] = 0
-        SumChoices = sum(Choices)
-        Choices[i] /= SumChoices
+            WMapedTuple[i] = tuple(WMapedTuple[i])
+            PheromonTuple[i] = tuple(PheromonTuple[i])
+        WMapedTuple = tuple(WMapedTuple)
+        PheromonTuple = tuple(PheromonTuple)
+
+        Choices = Fourmi.PathChoiceCached(WMapedTuple,self.CurrentPosition,self.MapSize,PheromonTuple)
         
         Choice = random.choices(range(self.MapSize),weights=Choices,k=1)[0]
         
@@ -57,7 +61,7 @@ class Fourmi:
         for i in range(self.MapSize):
             self.WMap[i][Choice] = 0
         return Choice
-        
+ 
     def UpdatePheromon(self):
         Start = self.PathTaken.popleft()
         Next = self.PathTaken.popleft()
@@ -65,6 +69,29 @@ class Fourmi:
             self.PheromonMap[Start][Next] += Fourmi.Deposit/self.LengthPath 
             Start = Next
             Next = self.PathTaken.popleft()
-            
+
+    @lru_cache()
+    def PathChoiceCached(WMap:Tuple[Tuple[float]],CurrentPosition: int,MapSize: int,PheromonMap: Tuple[Tuple[float]]):
+
+        # for i in range(MapSize):
+        #     if WMap[CurrentPosition][i] > 0:
+        #         Choices[i] = (((MaxWeigth)-WMap[CurrentPosition][i])**Fourmi.Alpha)*(PheromonMap[CurrentPosition][i]**Fourmi.Beta)
+        #     else:
+        #         Choices[i] = 0
+        Choices = Fourmi.PercentageCalculationCached(MapSize,WMap[CurrentPosition],PheromonMap[CurrentPosition])     
         
-        
+        SumChoices = sum(Choices)
+        for i in range(MapSize):
+            Choices[i] /= SumChoices
+        return Choices
+
+    @lru_cache()
+    def PercentageCalculationCached(MapSize:int,WMapRow:Tuple[float],PheromonMapRow:Tuple[float]):
+        Choices = [0]*MapSize
+        MaxWeigth = (max(WMapRow)+1)*1.1
+        for i in range(MapSize):
+            if WMapRow[i] > 0:
+                Choices[i] = ((MaxWeigth-WMapRow[i])**Fourmi.Alpha)*(PheromonMapRow[i]**Fourmi.Beta)
+            else:
+                Choices[i] = 0
+        return Choices

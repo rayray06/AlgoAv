@@ -9,10 +9,12 @@ from typing import List,Tuple,Deque
 from collections import deque
 import random
 import copy
+from functools import lru_cache
 import numpy as np
 from AlgoAV.Generation.GraphGen import WeigthSet, GraphGen
 
-def Djiska(WGraph:List[List[float]],nVille:int, u:int , v:int) -> Tuple[float,Deque[int]]:
+@lru_cache(maxsize=None)
+def Djiska(WGraph:Tuple[Tuple[float]],nVille:int, u:int , v:int) -> Tuple[float,Deque[int]]:
     """
     Do the Dijkstra's algorithm to find the shortest route between from the vertice u to v    
 
@@ -35,8 +37,11 @@ def Djiska(WGraph:List[List[float]],nVille:int, u:int , v:int) -> Tuple[float,De
     """
     Visited = deque() #Priority queu of the already visited vertice
     DistStart = [float('inf')]*(u) + [0.0] + [float('inf')]*(nVille-(u+1))#Array representing each vertice distance with the vertice u
-    copyWGraph = copy.deepcopy(WGraph)#A copy of the weigthed array to process the algoritm
-    
+    copyWGraph = list(copy.deepcopy(WGraph)) #A copy of the weigthed array to process the algoritm
+    for i in range(nVille):
+        copyWGraph[i] = list(copyWGraph[i])
+
+
     for i in range(len(copyWGraph)):#initialise every non-existing edge has infinite 
         for j in range(i+1):
             if(copyWGraph[i][j] == 0):
@@ -74,7 +79,8 @@ def Djiska(WGraph:List[List[float]],nVille:int, u:int , v:int) -> Tuple[float,De
         Path.appendleft(cur)
     return (DistStart[v],Path)
 
-def SetFullGraph(ListDeli:[int],nVille:int,WGraph : List[List[float]]) -> Tuple[List[List[Deque[int]]],List[List[float]]] : 
+@lru_cache(maxsize=None)
+def SetFullGraph(ListDeli:Tuple[int],nVille:int,WGraph : Tuple[Tuple[float]]) -> Tuple[List[List[Deque[int]]],Tuple[Tuple[float]]] : 
     """
     Create a complete Graph corresponding to the given incomplete graph 
 
@@ -97,7 +103,8 @@ def SetFullGraph(ListDeli:[int],nVille:int,WGraph : List[List[float]]) -> Tuple[
     """
     EquivArray = [[deque() for _ in range(nVille)] for _ in range(nVille)]
     WIntGraph =  [[0 for _ in range(nVille)] for _ in range(nVille)]
-    
+    NewCityLength = len(ListDeli)
+
     for i in ListDeli:
         for j in ListDeli:
             if i != j:
@@ -108,9 +115,11 @@ def SetFullGraph(ListDeli:[int],nVille:int,WGraph : List[List[float]]) -> Tuple[
         if i not in ListDeli:
             WIntGraph.pop(i)
             
-    for i in range(len(ListDeli)):
+    for i in range(NewCityLength):
         for j in range(nVille-1,-1,-1):
             if j not in ListDeli:
                 WIntGraph[i].pop(j)
+        WIntGraph[i] = tuple(WIntGraph[i])
+
     return  EquivArray , WIntGraph
      

@@ -5,7 +5,9 @@ Created on Mon Jun 13 15:11:35 2022
 @author: ray-h
 """
 import numpy as np
+import copy
 from AlgoAV.Modelisation.Fourmi import Fourmi
+
 class Colony:
     StartValue = 100
     ColonySize = 200
@@ -13,10 +15,15 @@ class Colony:
     
     def __init__(self,Mat,CitySize,StartingVertice):
         self.StartingVertice = StartingVertice
-        self.Territory = Mat
         self.CitySize = CitySize
         self.PheromonMap = [[Colony.StartValue if (Mat[i][j] > 0) else 0 for i in range(CitySize)] for j in range(CitySize)]
-        self.ListAnt = [Fourmi(Mat,CitySize,self.PheromonMap,StartingVertice) for _ in range(Colony.ColonySize)]
+
+        newMat = list(copy.deepcopy(Mat))
+        for i in range(CitySize):
+            newMat[i] = list(newMat[i])
+
+        self.Territory = newMat
+        self.ListAnt = [Fourmi(newMat,CitySize,self.PheromonMap,StartingVertice) for _ in range(Colony.ColonySize)]
     
     def SetNextStep(self):
         for i in range(self.CitySize):

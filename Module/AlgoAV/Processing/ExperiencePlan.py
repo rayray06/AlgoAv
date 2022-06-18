@@ -1,24 +1,25 @@
 from pulp import *
-def Borne(CitySize,WMat,ListDelivery):
-    objets = range(nb_objets)
-
-    # variables
-    x = LpVariable.dicts('objet', objets, 0, 1)
+import numpy as np
+def Borne(CitySize,WMat):
+    StateMat = {}
+    for i in range(CitySize):
+        for j in range(CitySize): # create a binary variable
+            StateMat[i, j] = LpVariable('x{},{}'.format(i, j), cat='Binary')
     
     # probleme
-    prob = LpProblem("knapsack", LpMaximize)
+    prob = LpProblem("Shortest_Delivery", LpMinimize)
 
     # fonction objective
-    cost = lpSum([valeur_objets[i]*x[i] for i in objets])
+    cost = lpSum([[ WMat[n][m]*StateMat[n, m] for m in range(CitySize)] for n in range(CitySize)])
     prob += cost
 
     # contrainte
-    prob += lpSum([poids_objets[i]*x[i] for i in objets]) <= capacite
+    for n in range(CitySize) :
+        prob += lpSum([ StateMat[n,m] for m in range(CitySize)]) == 1,"One place constraint "+str(n)
+
+    cont2 = lpSum([ StateMat[m,m] for m in range(CitySize)]) == 0,"No loop constraint"
+    prob += cont2
 
     prob.solve()
     return value(prob.objective) if (LpStatus[prob.status] == "Optimal") else None
 
-borne = borne_superieure()
-if borne is not None:
-    print("borne supérieure : ", borne)
-print("valeur de la solution :", str(valeur_contenu(sol)))
