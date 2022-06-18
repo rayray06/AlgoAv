@@ -25,15 +25,6 @@ class Fourmi:
         self.PathTaken = deque((StartVertice,))
         self.LengthPath = 0
         self.Alive = True
-    
-    def SetParameters(alpha:float,beta:float,Deposit:float):
-        if alpha < 0:
-            raise ValueError("alpha must be greater or equal to 0")
-        elif beta < 1:
-            raise ValueError("beta must be greater or equal to 1")
-        else:
-            Fourmi.Alpha=alpha
-            Fourmi.Beta=beta
             
     def Eliminate(self):
         self.Alive = False
@@ -70,14 +61,9 @@ class Fourmi:
             Start = Next
             Next = self.PathTaken.popleft()
 
-    @lru_cache()
+    @lru_cache(maxsize=None)
     def PathChoiceCached(WMap:Tuple[Tuple[float]],CurrentPosition: int,MapSize: int,PheromonMap: Tuple[Tuple[float]]):
 
-        # for i in range(MapSize):
-        #     if WMap[CurrentPosition][i] > 0:
-        #         Choices[i] = (((MaxWeigth)-WMap[CurrentPosition][i])**Fourmi.Alpha)*(PheromonMap[CurrentPosition][i]**Fourmi.Beta)
-        #     else:
-        #         Choices[i] = 0
         Choices = Fourmi.PercentageCalculationCached(MapSize,WMap[CurrentPosition],PheromonMap[CurrentPosition])     
         
         SumChoices = sum(Choices)
@@ -85,7 +71,7 @@ class Fourmi:
             Choices[i] /= SumChoices
         return Choices
 
-    @lru_cache()
+    @lru_cache(maxsize=None)
     def PercentageCalculationCached(MapSize:int,WMapRow:Tuple[float],PheromonMapRow:Tuple[float]):
         Choices = [0]*MapSize
         MaxWeigth = (max(WMapRow)+1)*1.1

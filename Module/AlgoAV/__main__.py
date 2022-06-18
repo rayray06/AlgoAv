@@ -5,8 +5,9 @@ from AlgoAV.Modelisation.FullGraph import SetFullGraph
 from AlgoAV.Processing.ExperiencePlan import Borne
 from ipywidgets import IntProgress
 from IPython.display import display
+import mysql.connector
 import progressbar
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import numpy as np
 import random
 import math
@@ -14,48 +15,46 @@ import math
 if __name__ == "__main__":
     
 
-    widgets = [' [',
-            progressbar.Timer(format= 'elapsed time: %(elapsed)s'),
+    widgets = [' ['
+               , progressbar.Timer(),
             '] ',
             progressbar.Bar('*'),' (',
             progressbar.ETA(), ') ',
             ]
-    Textbar = progressbar.ProgressBar(max_value=200, 
-                              widgets=widgets).start()
-    NbTest = 15
+    NbTest = 30
 
     seed = 20
     random.seed(a=seed)
 
-    nb_steps_bar = 1
-    SizeEnumerate = range(10,50,10)
+    nb_steps_bar = NbTest
+    SizeEnumerate = range(10,30,10)
     nb_steps_bar *= len(SizeEnumerate)
 
-    IteRange = range(20,50,10)
+    IteRange = range(30,39,10)
     nb_steps_bar *= len(IteRange)
     
-    AlphaRange = range(0,100,45)
+    AlphaRange = range(0,40,45)
     nb_steps_bar *= len(AlphaRange)
     
-    BetaRange = range(0,100,45)
+    BetaRange = range(0,40,45)
     nb_steps_bar *= len(BetaRange)
     
-    EvapRange = range(10,25,5)
+    EvapRange = range(10,14,5)
     nb_steps_bar *= len(EvapRange)
     
-    DepRange = range(90,100,3)
+    DepRange = range(90,92,3)
     nb_steps_bar *= len(DepRange)
 
-    StartRange = range(100,120,10)
+    StartRange = range(100,109,10)
     nb_steps_bar *= len(StartRange)
 
-    ColonySIzeRange = range(100,150,20)
+    ColonySIzeRange = range(30,90,20)
     nb_steps_bar *= len(ColonySIzeRange)
     
-
-    print(nb_steps_bar)
-    bar = IntProgress(min=0, max=nb_steps_bar, layout={"width" : "100%"})
-    display(bar)
+    Textbar = progressbar.ProgressBar(maxval=nb_steps_bar, 
+                              widgets=widgets)
+    Textbar.start()
+    value = 0
 
     #Nombre Ville
     CorrespondingSize = []
@@ -67,7 +66,7 @@ if __name__ == "__main__":
         Compositions = []
         MeanValues = []
         DerivativeValues = []
-        maxWeigth = 50
+        maxWeigth = 1000
         
         startingVertice = random.choice(range(SizeTest))
         ListDeliveries = random.choices(range(SizeTest),k=(math.floor(SizeTest*0.6)+1))
@@ -82,71 +81,77 @@ if __name__ == "__main__":
         EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph)
         
         borne = Borne(len(ListDeliverieTreated),WFullGraph)
-
+        Sufficient = False
          
-        IteEnumerate = enumerate(IteRange)
-        for ItIndex,ItterationUsed in IteEnumerate:
+        for ItterationUsed in IteRange:
         #NIteration
 
-            AlphaEnumerate = enumerate(AlphaRange)
-            for AlphaIndex,Alpha in AlphaEnumerate:
+            for Alpha in AlphaRange:
             #Alpha
                 Fourmi.Alpha = Alpha/10
 
-                BetaEnumerate = enumerate(BetaRange)
-                for BetaIndex,Beta in BetaEnumerate:
+                for Beta in BetaRange:
                 #Beta
                     Fourmi.Beta: float = Beta/10
 
-                    EvapEnumerate = enumerate(EvapRange)
-                    for EvapIndex,Evap in EvapEnumerate:
+                    for Evap in EvapRange:
                     #Evap
                         Colony.Evap = Evap/100
 
-                        DepEnumerate = enumerate(DepRange)
-                        for DepIndex,Deposit in DepEnumerate:    
+                        for Deposit in DepRange:    
                         #Deposit
                             Fourmi.Deposit = Deposit
 
-                            StartValueEnumerate = enumerate(StartRange)
-                            for StartValueIndex,StartValue in StartValueEnumerate:
+
+                            for StartValue in StartRange:
                             #StartValue
                                 Colony.StartValue = StartValue
 
-                                ColonySIzeEnumerate = enumerate(ColonySIzeRange)
-                                for ColonySIzeIndex,ColonySize in ColonySIzeEnumerate:
+
+                                for ColonySize in ColonySIzeRange :
                                 #ColonySize
 
                                     random.seed()
                                     CurValues = []
-                                    Compo = (ItIndex,AlphaIndex,BetaIndex,EvapIndex,DepIndex,StartValueIndex,ColonySIzeIndex)
-                                    print(str(SizeTest)+": "+str(Compo))
+                                    if not(Sufficient):
+                                        Compo = (ItterationUsed,Alpha,Beta,Evap,Deposit,StartValue,ColonySize)
+                                        Textbar.update(value)
+                                        print(str(SizeTest)+": "+str(Compo))
                                     for _ in range(NbTest):
-                                        ColonyO = Colony(WFullGraph,len(ListDeliverieTreated),ListDeliverieTreated.index(startingVertice))
-                                        MinWeigth = 0
-                                        BestPath = None
-                                        for i in range(ItterationUsed):
-                                            ColonyO.MoveAnts()
-                                            if(i < ItterationUsed-1):
-                                                ColonyO.SetNextStep()
-                                        MinWeigth, BestPath = ColonyO.BestAnts()
-                                        if(BestPath is not None) :
-                                            CurValues.append((MinWeigth/borne)*100)
-                                        bar.value += 1
-                                        Textbar.update(bar.value)
+                                        if not(Sufficient):
+                                            ColonyO = Colony(WFullGraph,len(ListDeliverieTreated),ListDeliverieTreated.index(startingVertice))
+                                            MinWeigth = 0
+                                            BestPath = None
+                                            value += 1
+                                            for i in range(ItterationUsed):
+                                                ColonyO.MoveAnts()
+                                                if(i < ItterationUsed-1):
+                                                    ColonyO.SetNextStep()
+                                            MinWeigth, BestPath = ColonyO.BestAnts()
+                                            if(BestPath is not None) :
+                                                CurValues.append((MinWeigth/borne)*100)
+                                        else:
+                                            value += 1
                                     if len(CurValues) > 0:
+                                        meanValue = np.mean(CurValues)
+                                        print(meanValue)
                                         Compositions.append(Compo)
                                         MeanValues.append(np.mean(CurValues))
                                         DerivativeValues.append(np.nanstd(CurValues))
+                                        if meanValue < 230:
+                                            Sufficient = True
         if len(MeanValues) > 0:
             indexBest = MeanValues.index(min(MeanValues))
             CorrespondingSize.append(SizeTest)
             BestCompositionsList.append(Compositions[indexBest])
             BestMeanValuesList.append(MeanValues[indexBest])
             BestMeanDerivativeValuesList.append(DerivativeValues[indexBest])
+    Textbar.finish()
     # affichage de la courbe de moyenne
+    print("Beginning Display")
     plt.plot(CorrespondingSize, BestMeanValuesList)
-
+    
+    
     # affichage de la bande d'écart-type
     plt.fill_between(CorrespondingSize,
                     np.subtract(BestMeanValuesList, BestMeanDerivativeValuesList), # borne haute
@@ -156,9 +161,26 @@ if __name__ == "__main__":
     plt.ylabel("Distance de la borne en %")
     plt.title("Meilleurs qualité de solutions trouvé par taille de liste")
     plt.show()
+    
+    print("Beginning to send to DB")
+    RowList = []
+    for i in range(len(CorrespondingSize)):
+        RowList.append((CorrespondingSize[i],BestCompositionsList[i][0],BestCompositionsList[i][1],BestCompositionsList[i][2],BestCompositionsList[i][3],BestCompositionsList[i][4],BestCompositionsList[i][5],BestCompositionsList[i][6]))
+    connection = mysql.connector.connect(host='testrialpayapi.cokj0wfmdhfw.eu-west-3.rds.amazonaws.com',
+                                         port=3315,
+                                         database='AlgoAV',
+                                         user='PortfolioUser')
+    connection.start_transaction()
+    c = connection.cursor()
+    for i in RowList:
+       c.execute("REPLACE INTO Param VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",i)
+    connection.commit()
+    c.close()
+    connection.close()
+    
 
 
-                                    
+                                
                                     
     
     
