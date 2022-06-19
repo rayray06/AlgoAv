@@ -77,7 +77,6 @@ def connecte(matriceAdj: List[List[bool]]) -> bool:
                 return False    
     return True
 
-@lru_cache()
 def GraphGen(nVille: int) -> Tuple[List[int]]:
     """
     Function used to generate the adjacence array from a connected non oriented graph of nVille cities
@@ -111,7 +110,6 @@ def GraphGen(nVille: int) -> Tuple[List[int]]:
     # We return the array in array of integers
     return tuple(FinalArray)
 
-@lru_cache()
 def WeigthSet(MatAdj:Tuple[Tuple[int]],nVille:int,seed:int,maxWeigth:float) -> Tuple[Tuple[float]]:
     """
     

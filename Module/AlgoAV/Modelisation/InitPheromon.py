@@ -12,6 +12,8 @@ class Colony:
     StartValue = 100
     ColonySize = 200
     Evap : float = 0.4
+    BestPath = tuple()
+    MinWeigth = 0
     
     def __init__(self,Mat,CitySize,StartingVertice):
         self.StartingVertice = StartingVertice

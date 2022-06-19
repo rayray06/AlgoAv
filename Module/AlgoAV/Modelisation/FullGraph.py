@@ -13,7 +13,6 @@ from functools import lru_cache
 import numpy as np
 from AlgoAV.Generation.GraphGen import WeigthSet, GraphGen
 
-@lru_cache(maxsize=None)
 def Djiska(WGraph:Tuple[Tuple[float]],nVille:int, u:int , v:int) -> Tuple[float,Deque[int]]:
     """
     Do the Dijkstra's algorithm to find the shortest route between from the vertice u to v    
@@ -79,7 +78,6 @@ def Djiska(WGraph:Tuple[Tuple[float]],nVille:int, u:int , v:int) -> Tuple[float,
         Path.appendleft(cur)
     return (DistStart[v],Path)
 
-@lru_cache(maxsize=None)
 def SetFullGraph(ListDeli:Tuple[int],nVille:int,WGraph : Tuple[Tuple[float]]) -> Tuple[List[List[Deque[int]]],Tuple[Tuple[float]]] : 
     """
     Create a complete Graph corresponding to the given incomplete graph 

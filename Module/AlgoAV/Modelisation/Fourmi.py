@@ -61,7 +61,7 @@ class Fourmi:
             Start = Next
             Next = self.PathTaken.popleft()
 
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize=256)
     def PathChoiceCached(WMap:Tuple[Tuple[float]],CurrentPosition: int,MapSize: int,PheromonMap: Tuple[Tuple[float]]):
 
         Choices = Fourmi.PercentageCalculationCached(MapSize,WMap[CurrentPosition],PheromonMap[CurrentPosition])     
@@ -71,7 +71,7 @@ class Fourmi:
             Choices[i] /= SumChoices
         return Choices
 
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize=256)
     def PercentageCalculationCached(MapSize:int,WMapRow:Tuple[float],PheromonMapRow:Tuple[float]):
         Choices = [0]*MapSize
         MaxWeigth = (max(WMapRow)+1)*1.1
