@@ -27,28 +27,28 @@ if __name__ == "__main__":
     random.seed(a=seed)
 
     nb_steps_bar = NbTest
-    SizeEnumerate = range(10,30,10)
+    SizeEnumerate = range(10,100,10)
     nb_steps_bar *= len(SizeEnumerate)
 
-    IteRange = range(30,39,10)
+    IteRange = range(30,60,10)
     nb_steps_bar *= len(IteRange)
     
-    AlphaRange = range(0,40,45)
+    AlphaRange = range(30,60,5)
     nb_steps_bar *= len(AlphaRange)
     
-    BetaRange = range(0,40,45)
+    BetaRange = range(30,60,5)
     nb_steps_bar *= len(BetaRange)
     
-    EvapRange = range(10,14,5)
+    EvapRange = range(40,90,5)
     nb_steps_bar *= len(EvapRange)
     
-    DepRange = range(90,92,3)
+    DepRange = range(90,120,3)
     nb_steps_bar *= len(DepRange)
 
-    StartRange = range(100,109,10)
+    StartRange = range(100,130,10)
     nb_steps_bar *= len(StartRange)
 
-    ColonySIzeRange = range(30,90,20)
+    ColonySIzeRange = range(30,100,30)
     nb_steps_bar *= len(ColonySIzeRange)
     
     Textbar = progressbar.ProgressBar(maxval=nb_steps_bar, 
