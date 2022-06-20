@@ -135,7 +135,10 @@ def WeigthSet(MatAdj:Tuple[Tuple[int]],nVille:int,seed:int,maxWeigth:float) -> T
     Matrice_Final = list(MatAdj)
     for i in range(nVille):
         Matrice_Final[i] = list(MatAdj[i])
-    random.seed(a=seed)
+    if seed is not None:
+        random.seed(a=seed)
+    else:
+        random.seed()
     for i in range(nVille):
         for j in range(i):
             Matrice_Final[j][i] *= 1 + (random.random() * maxWeigth)

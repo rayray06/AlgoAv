@@ -22,9 +22,12 @@ if __name__ == "__main__":
             progressbar.ETA(), ') ',
             ]
     NbTest = 30
-
+    PourcentageCible = 250
     seed = 20
-    random.seed(a=seed)
+    if seed is not None:
+        random.seed(seed)
+    else:
+        random.seed()
 
     nb_steps_bar = NbTest
     SizeEnumerate = range(10,100,10)
@@ -62,23 +65,30 @@ if __name__ == "__main__":
     BestMeanValuesList = []
     BestMeanDerivativeValuesList = []
     for SizeTest in SizeEnumerate:
-
+        
         Compositions = []
         MeanValues = []
         DerivativeValues = []
         maxWeigth = 1000
         
-        startingVertice = random.choice(range(SizeTest))
-        ListDeliveries = random.choices(range(SizeTest),k=(math.floor(SizeTest*0.6)+1))
-        
-        ListDeliveries.append(startingVertice)
-        ListDeliverieTreated = tuple(np.unique(ListDeliveries).tolist())
+        ListTest = []
+        for _ in range(NbTest):
 
-        Graph = GraphGen(SizeTest)
-        WGraph = WeigthSet(Graph,SizeTest,seed,maxWeigth)
-        
-        
-        EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph)
+            startingVertice = random.choice(range(SizeTest))
+            ListDeliveries = random.choices(range(SizeTest),k=(math.floor(SizeTest*0.6)+1))
+            
+            ListDeliveries.append(startingVertice)
+            ListDeliverieTreated = tuple(np.unique(ListDeliveries).tolist())
+
+            Graph = GraphGen(SizeTest)
+            WGraph = WeigthSet(Graph,SizeTest,seed,maxWeigth)
+            
+            
+            EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph)
+
+            ListTest.append((WFullGraph,ListDeliverieTreated,startingVertice))
+
+
         
         borne = Borne(len(ListDeliverieTreated),WFullGraph)
         Sufficient = False
@@ -117,9 +127,9 @@ if __name__ == "__main__":
                                         Compo = (ItterationUsed,Alpha,Beta,Evap,Deposit,StartValue,ColonySize)
                                         Textbar.update(value)
                                         print(str(SizeTest)+": "+str(Compo))
-                                    for _ in range(NbTest):
+                                    for test in range(NbTest):
                                         if not(Sufficient):
-                                            ColonyO = Colony(WFullGraph,len(ListDeliverieTreated),ListDeliverieTreated.index(startingVertice))
+                                            ColonyO = Colony(ListTest[test][0],len(ListTest[test][1]),(ListTest[test][1]).index(ListTest[test][2]))
                                             MinWeigth = 0
                                             BestPath = None
                                             value += 1
@@ -138,7 +148,7 @@ if __name__ == "__main__":
                                         Compositions.append(Compo)
                                         MeanValues.append(np.mean(CurValues))
                                         DerivativeValues.append(np.nanstd(CurValues))
-                                        if meanValue < 230:
+                                        if meanValue < PourcentageCible:
                                             Sufficient = True
         if len(MeanValues) > 0:
             indexBest = MeanValues.index(min(MeanValues))
