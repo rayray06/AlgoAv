@@ -1,13 +1,9 @@
 from AlgoAV.Generation.GraphGen import GraphGen , WeigthSet
-from AlgoAV.Modelisation.InitPheromon import Colony
-from AlgoAV.Modelisation.Fourmi import Fourmi
 from AlgoAV.Modelisation.FullGraph import SetFullGraph
 from AlgoAV.Processing.ExperiencePlan import Borne
-from ipywidgets import IntProgress
-from IPython.display import display
+from AlgoAV.Processing.FourmiOpti import FourmiOpti
 import mysql.connector
 import progressbar
-import matplotlib.pyplot as plt
 import numpy as np
 import random
 import math
@@ -15,11 +11,12 @@ import math
 if __name__ == "__main__":
     
 
-    widgets = [' ['
+    widgets = ['\n['
                , progressbar.Timer(),
             '] ',
-            progressbar.Bar('*'),' (',
-            progressbar.ETA(), ') ',
+            progressbar.Bar('*'),' ',
+            progressbar.Percentage(),' | (',
+            progressbar.ETA(), ')\n',
             ]
     NbTest = 5
     seed = 20
@@ -29,10 +26,10 @@ if __name__ == "__main__":
         random.seed()
 
     nb_steps_bar = NbTest
-    SizeEnumerate = [10]
+    SizeEnumerate = [30]
     nb_steps_bar *= len(SizeEnumerate)
     
-    IterationRange = range((2*SizeEnumerate[0]),(SizeEnumerate[0]**2),SizeEnumerate[0]*2)
+    IterationRange = range(SizeEnumerate[0]*2,(SizeEnumerate[0]**2),math.floor(SizeEnumerate[0]))
     nb_steps_bar *= len(IterationRange)
 
 
@@ -53,7 +50,7 @@ if __name__ == "__main__":
     StartRange = range(100,110,10)
     nb_steps_bar *= len(StartRange)
 
-    ColonySIzeRange = range(2*SizeEnumerate[0],SizeEnumerate[0]**2,math.floor(SizeEnumerate[0]/5))
+    ColonySIzeRange = range(SizeEnumerate[0]*2,(SizeEnumerate[0]**2),math.floor(SizeEnumerate[0]))
     nb_steps_bar *= len(ColonySIzeRange)
 
     print(nb_steps_bar)
@@ -80,19 +77,18 @@ if __name__ == "__main__":
         for _ in range(NbTest):
 
             startingVertice = random.choice(range(SizeTest))
-            ListDeliveries = random.choices(range(SizeTest),k=(5))
-            
-            ListDeliveries.append(startingVertice)
-            ListDeliverieTreated = tuple(np.unique(ListDeliveries).tolist())
+            ListDeliveries = list(range(SizeTest))
 
+            ListDeliverieTreated = tuple(np.unique(ListDeliveries).tolist())
+            CityTotreat = len(ListDeliverieTreated)
             Graph = GraphGen(SizeTest)
             WGraph = WeigthSet(Graph,SizeTest,seed,maxWeigth)
             
             
             EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph)
-
-            ListTest.append((WFullGraph,ListDeliverieTreated,startingVertice))
-            borne = Borne(len(ListDeliverieTreated),WFullGraph)
+            
+            ListTest.append((WFullGraph,startingVertice,CityTotreat))
+            borne = Borne(CityTotreat,WFullGraph)
             ListBorne.append(borne)
         ListTest = tuple(ListTest)
         ListBorne = tuple(ListBorne)
@@ -103,22 +99,19 @@ if __name__ == "__main__":
 
             for Prop in ProportionRange:
             #Alpha
-                Fourmi.Alpha = 5
+                Alpha = 5
 
-                Fourmi.Beta: float = Fourmi.Alpha*(Prop/100)
+                Beta: float = Alpha*(Prop/100)
 
                 for Evap in EvapRange:
                 #Evap
-                    Colony.Evap = Evap/100
+                    Evap /= 100
 
                     for Deposit in DepRange:    
                     #Deposit
-                        Fourmi.Deposit = Deposit
 
 
                         for StartValue in StartRange:
-                        #StartValue
-                            Colony.StartValue = StartValue
 
 
                             for ColonySize in ColonySIzeRange :
@@ -126,19 +119,23 @@ if __name__ == "__main__":
 
                                 random.seed()
                                 CurValues = []
-                                Compo = (ItterationUsed,Fourmi.Alpha,Fourmi.Beta,Evap,Deposit,StartValue,ColonySize)
+                                Compo = (ItterationUsed,Alpha,Beta,Evap,Deposit,StartValue,ColonySize)
                                 Textbar.update(value)
-                                print(str(SizeTest)+": "+str(Compo))
+                                print(str(SizeTest)+" : "+str(Compo))
                                 for test in range(NbTest):
-                                        ColonyO = Colony(ListTest[test][0],len(ListTest[test][1]),(ListTest[test][1]).index(ListTest[test][2]))
-                                        MinWeigth = 0
-                                        BestPath = None
                                         value += 1
-                                        for i in range(ItterationUsed):
-                                            ColonyO.MoveAnts()
-                                            if(i < ItterationUsed-1):
-                                                ColonyO.SetNextStep()
-                                        MinWeigth, BestPath = ColonyO.BestAnts()
+                                        MinWeigth, BestPath = \
+                                        FourmiOpti(ListTest[test][0],
+                                                   ListTest[test][2],
+                                                   Evap,
+                                                   Alpha,
+                                                   Beta,
+                                                   ItterationUsed,
+                                                   Deposit,
+                                                   ListTest[test][1],
+                                                   ColonySize,
+                                                   StartValue
+                                                   )
                                         if(BestPath is not None) :
                                             CurValues.append((MinWeigth/ListBorne[test])*100)
                                 if len(CurValues) > 0:
@@ -150,17 +147,17 @@ if __name__ == "__main__":
         if len(MeanValues) > 0:
             indexBest = MeanValues.index(min(MeanValues))
             CorrespondingSize.append(SizeTest)
-            BestCompositionsList.append(Compositions[indexBest])
-            BestMeanValuesList.append(MeanValues[indexBest])
-            BestMeanDerivativeValuesList.append(DerivativeValues[indexBest])
+            # BestCompositionsList.append(Compositions[indexBest])
+            BestMeanValuesList.append(np.mean(MeanValues))
+            BestMeanDerivativeValuesList.append(np.nanstd(MeanValues))
     Textbar.finish()
     # affichage de la courbe de moyenne
     print("Beginning Display")
-    print(str(CorrespondingSize[0])+" "+str(BestCompositionsList[0]))
+    print(str(CorrespondingSize[0]))
     print("Borne Sup = " +str(BestMeanValuesList[0]+BestMeanDerivativeValuesList[0]))
     print("Moyenne = " +str(BestMeanValuesList[0]))
     print("Borne Inf = " +str(BestMeanValuesList[0]-BestMeanDerivativeValuesList[0]))
-    
+
     print("Beginning to send to DB")
     RowList = []
     for i in range(len(CorrespondingSize)):
