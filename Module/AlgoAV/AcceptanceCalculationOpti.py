@@ -18,22 +18,22 @@ if __name__ == "__main__":
             progressbar.Percentage(),' | (',
             progressbar.ETA(), ')\n',
             ]
-    NbTest = 5
-    seed = 20
+    NbTest = 30
+    seed = None
     if seed is not None:
         random.seed(seed)
     else:
         random.seed()
 
     nb_steps_bar = NbTest
-    SizeEnumerate = [30]
+    SizeEnumerate = [10]
     nb_steps_bar *= len(SizeEnumerate)
     
-    IterationRange = range(SizeEnumerate[0]*2,(SizeEnumerate[0]**2),math.floor(SizeEnumerate[0]))
+    IterationRange = range(math.floor(SizeEnumerate[0]/4),(SizeEnumerate[0]*2),math.floor(SizeEnumerate[0]/4))
     nb_steps_bar *= len(IterationRange)
 
 
-    ProportionRange = range(10,150,50)
+    ProportionRange = range(10,100,50)
     nb_steps_bar *= len(ProportionRange)
     # AlphaRange = range(30,40,5)
     # nb_steps_bar *= len(AlphaRange)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # BetaRange = range(30,40,5)
     # nb_steps_bar *= len(BetaRange)
     
-    EvapRange = range(40,60,5)
+    EvapRange = range(40,65,5)
     nb_steps_bar *= len(EvapRange)
     
     DepRange = range(100,110,10)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     StartRange = range(100,110,10)
     nb_steps_bar *= len(StartRange)
 
-    ColonySIzeRange = range(SizeEnumerate[0]*2,(SizeEnumerate[0]**2),math.floor(SizeEnumerate[0]))
+    ColonySIzeRange = range(math.floor(SizeEnumerate[0]/4),(SizeEnumerate[0]*2),math.floor(SizeEnumerate[0]/4))
     nb_steps_bar *= len(ColonySIzeRange)
 
     print(nb_steps_bar)
@@ -99,9 +99,9 @@ if __name__ == "__main__":
 
             for Prop in ProportionRange:
             #Alpha
-                Alpha = 5
+                Beta = 5
 
-                Beta: float = Alpha*(Prop/100)
+                Alpha: float = Beta*(Prop/100)
 
                 for Evap in EvapRange:
                 #Evap
@@ -154,25 +154,9 @@ if __name__ == "__main__":
     # affichage de la courbe de moyenne
     print("Beginning Display")
     print(str(CorrespondingSize[0]))
-    print("Borne Sup = " +str(BestMeanValuesList[0]+BestMeanDerivativeValuesList[0]))
+    print("Borne Sup = " +str(BestMeanValuesList[0] + 1.96 * (BestMeanDerivativeValuesList[0]/math.sqrt(nb_steps_bar/NbTest))))
     print("Moyenne = " +str(BestMeanValuesList[0]))
-    print("Borne Inf = " +str(BestMeanValuesList[0]-BestMeanDerivativeValuesList[0]))
-
-    print("Beginning to send to DB")
-    RowList = []
-    for i in range(len(CorrespondingSize)):
-        RowList.append((CorrespondingSize[i],BestCompositionsList[i][0],BestCompositionsList[i][1],BestCompositionsList[i][2],BestCompositionsList[i][3],BestCompositionsList[i][4],BestCompositionsList[i][5],BestCompositionsList[i][6]))
-    connection = mysql.connector.connect(host='testrialpayapi.cokj0wfmdhfw.eu-west-3.rds.amazonaws.com',
-                                         port=3315,
-                                         database='AlgoAV',
-                                         user='PortfolioUser')
-    connection.start_transaction()
-    c = connection.cursor()
-    for i in RowList:
-       c.execute("REPLACE INTO Param VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",i)
-    connection.commit()
-    c.close()
-    connection.close()
+    print("Borne Inf = " +str(BestMeanValuesList[0] - 1.96 * (BestMeanDerivativeValuesList[0]/math.sqrt(nb_steps_bar/NbTest))))
     
 
 

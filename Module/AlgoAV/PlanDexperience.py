@@ -21,12 +21,12 @@ if __name__ == "__main__":
             progressbar.Percentage(),' | (',
             progressbar.ETA(), ')\n',
             ]
-    NbTest = 30
-    PourcentageCible = 210
+    NbTest = 1
+    PourcentageCible = 104.9879230895329
     seed = 20
-    minSize = 10
-    maxSize = 110
-    stepSize = 10
+    minSize = 5
+    maxSize = 30
+    stepSize = 1
     if seed is not None:
         random.seed(seed)
     else:
@@ -38,10 +38,10 @@ if __name__ == "__main__":
 
     # Iteration range(Ceil(Size/2),Size*3,Ceil(Size/10))
     MaxCeiled = maxSize - ((maxSize-minSize)%stepSize)
-    nb_steps_bar *= (10/2)*(MaxCeiled-minSize)/stepSize
+    nb_steps_bar *= (35/2)*(MaxCeiled-minSize)/stepSize
 
     # ColonySize range(Ceil(Size/2),Size*3,Ceil(Size/10))
-    nb_steps_bar *= (10/2)*(MaxCeiled-minSize)/stepSize
+    nb_steps_bar *= (35/2)*(MaxCeiled-minSize)/stepSize
 
     
     ProportionRange = range(10,170,50)
@@ -67,8 +67,8 @@ if __name__ == "__main__":
     BestMeanValuesList = []
     BestMeanDerivativeValuesList = []
     for SizeTest in SizeEnumerate:
-        IteRange = range(math.ceil(SizeTest/2),3*SizeTest,math.ceil(SizeTest/10))
-        ColonySIzeRange = range(math.ceil(SizeTest/2),3*SizeTest,math.ceil(SizeTest/10))
+        IteRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
+        ColonySIzeRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
         
         
         Compositions = []
@@ -77,45 +77,48 @@ if __name__ == "__main__":
         maxWeigth = 1000
         
         ListTest = []
+        print("Generating graph of size : " + str(SizeTest))
         for _ in range(NbTest):
+            borne = None
+            while borne is None:
+                print("New Generation test")
+                startingVertice = random.choice(range(SizeTest))
 
-            startingVertice = random.choice(range(SizeTest))
+                ListDeliverieTreated = tuple(range(SizeTest))
 
-            ListDeliverieTreated = tuple(range(SizeTest))
+                CityTotreat = len(ListDeliverieTreated)
+                Graph = GraphGen(SizeTest)
+                WGraph = WeigthSet(Graph,SizeTest,seed,maxWeigth)
+                
+                
+                EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph)
 
-            CityTotreat = len(ListDeliverieTreated)
-            Graph = GraphGen(SizeTest)
-            WGraph = WeigthSet(Graph,SizeTest,seed,maxWeigth)
+                borne = Borne(len(ListDeliverieTreated),WFullGraph)
             
-            
-            EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph)
-
-            borne = Borne(len(ListDeliverieTreated),WFullGraph)
-
             ListTest.append((WFullGraph,startingVertice,CityTotreat,borne))
 
 
-        
+        print("Starting Calculation for size of : "+str(SizeTest))
         Sufficient = False
-        for ItterationUsed in IteRange:
-        #NIteration
-        
-            for ColonySize in ColonySIzeRange :
-            #ColonySize
 
-                for Prop in ProportionRange :
-                    Alpha = 5
-                    Beta = Alpha*(Prop/100)
+        for Prop in ProportionRange :
+            Alpha = 5
+            Beta = Alpha*(Prop/100)
 
-                    for Evap in EvapRange:
-                    #Evap
-                        Evap /= 100
+            for Evap in EvapRange:
+            #Evap
+                Evap /= 100
 
-                        for Deposit in DepRange:    
-                        #Deposit
+                for Deposit in DepRange:    
+                #Deposit
 
-                            for StartValue in StartRange:
-                            #StartValue
+                    for StartValue in StartRange:
+                    #StartValue
+                        for ItterationUsed in IteRange:
+                        #NIteration
+                        
+                            for ColonySize in ColonySIzeRange :
+                            #ColonySize
 
                                 random.seed()
                                 CurValues = []
@@ -147,7 +150,7 @@ if __name__ == "__main__":
                                     print(meanValue)
                                     Compositions.append(Compo)
                                     MeanValues.append(np.mean(CurValues))
-                                    DerivativeValues.append(np.nanstd(CurValues))
+                                    DerivativeValues.append(1.96 * (np.nanstd(CurValues)/math.sqrt(NbTest)))
                                     if meanValue < PourcentageCible:
                                         Sufficient = True
         if len(MeanValues) > 0:
