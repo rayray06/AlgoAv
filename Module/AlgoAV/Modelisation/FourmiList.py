@@ -9,12 +9,14 @@ from collections import deque
 import random
 from functools import lru_cache
 
-FourmiType = List[Union[int,Deque[int],float]]
+FourmiType = List[Union[int,Deque[int],float,Deque[int],int]]
 """
 List representing an ant made of the following values:
 0 : CurrentPosition of the ant in the graph : integer,
 1 : PathTaken By the ant : FILO of integer,
 2 : TotalLength of the chosen path
+3 : Each Time Step Followed 
+4 : Curent Time Step
 """
 
 def CreateFourmi(StartVertice:int) -> FourmiType:
@@ -32,7 +34,7 @@ def CreateFourmi(StartVertice:int) -> FourmiType:
         The ant with the given parameters.
 
     """
-    return [StartVertice,deque((StartVertice,)),0]
+    return [StartVertice,deque((StartVertice,)),0,deque((0,)),0]
     
 
 

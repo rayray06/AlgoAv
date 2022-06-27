@@ -7,6 +7,7 @@ Created on Mon Jun 13 12:20:54 2022
 import numpy as np
 import copy
 import random
+import math
 from typing import List,Tuple
 from collections import deque
 from functools import lru_cache
@@ -110,7 +111,7 @@ def GraphGen(nVille: int) -> Tuple[List[int]]:
     # We return the array in array of integers
     return tuple(FinalArray)
 
-def WeigthSet(MatAdj:Tuple[Tuple[int]],nVille:int,seed:int,maxWeigth:float) -> Tuple[Tuple[float]]:
+def WeigthSetFixed(MatAdj:Tuple[Tuple[int]],nVille:int,seed:int,maxWeigth:float,MaxTime:int) -> Tuple[Tuple[Tuple[float]]]:
     """
     
     Set a given adjacence array as Weigthed
@@ -127,23 +128,24 @@ def WeigthSet(MatAdj:Tuple[Tuple[int]],nVille:int,seed:int,maxWeigth:float) -> T
 
     Returns
     -------
-    List[List[float]]
+    Tuple[Tuple[Tuple[float]]]
         Weigth Array.
     @ray-h
     """
-
-    Matrice_Final = list(MatAdj)
-    for i in range(nVille):
-        Matrice_Final[i] = list(MatAdj[i])
-    if seed is not None:
-        random.seed(a=seed)
-    else:
-        random.seed()
-    for i in range(nVille):
-        for j in range(i):
-            Matrice_Final[j][i] *= 1 + (random.random() * maxWeigth)
-            Matrice_Final[i][j] = Matrice_Final[j][i]
-    for i in range(nVille):
-        Matrice_Final[i] = tuple(Matrice_Final[i])
-    Matrice_Final = tuple(Matrice_Final)
-    return Matrice_Final
+    Res_Array = []
+    for _ in range(MaxTime):
+        Matrice_Final = list(MatAdj)
+        for i in range(nVille):
+            Matrice_Final[i] = list(MatAdj[i])
+        if seed is not None:
+            random.seed(a=seed)
+        else:
+            random.seed()
+        for i in range(nVille):
+            for j in range(i):
+                Matrice_Final[j][i] *= 1 + (random.random() * maxWeigth)
+                Matrice_Final[i][j] = Matrice_Final[j][i]
+        for i in range(nVille):
+            Matrice_Final[i] = tuple(Matrice_Final[i])
+        Res_Array.append(tuple(Matrice_Final))
+    return tuple(Res_Array)

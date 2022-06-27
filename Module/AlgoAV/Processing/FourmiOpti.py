@@ -10,7 +10,7 @@ import random
 
 
 
-def FourmiOpti(WMap:Tuple[Tuple[float]],CitySize:int,Evap:float,Alpha:float,Beta:float,IterationCount:int,Deposit:float,StartingVertice:int,ColonySize:int,StartValue:float) -> Tuple[float,Deque[int]] :
+def FourmiOpti(WMap:Tuple[Tuple[Tuple[float]]],CitySize:int,Evap:float,Alpha:float,Beta:float,IterationCount:int,Deposit:float,StartingVertice:int,ColonySize:int,StartValue:float,MaxTime:int) -> Tuple[float,Deque[int],Deque[int]] :
     """
     
 
@@ -46,7 +46,7 @@ def FourmiOpti(WMap:Tuple[Tuple[float]],CitySize:int,Evap:float,Alpha:float,Beta
     random.seed()
     ColonyO: ColonyType = CreationColony(WMap, CitySize, StartingVertice, ColonySize, StartValue)
     for i in range(IterationCount):
-        MoveAnts(ColonyO,WMap,Alpha,Beta)
+        MoveAnts(ColonyO,WMap,Alpha,Beta,MaxTime)
         if(i < IterationCount-1):
             SetNextStep(ColonyO,Evap,Deposit)
-    return  ColonyO[6],ColonyO[7]
+    return  ColonyO[6],ColonyO[7],ColonyO[8]

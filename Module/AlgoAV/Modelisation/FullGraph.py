@@ -11,72 +11,7 @@ import random
 import copy
 from functools import lru_cache
 import numpy as np
-from AlgoAV.Generation.GraphGen import WeigthSet, GraphGen
-
-def Djiska(WGraph:Tuple[Tuple[float]],nVille:int, u:int , v:int) -> Tuple[float,Deque[int]]:
-    """
-    Do the Dijkstra's algorithm to find the shortest route between from the vertice u to v    
-
-    Parameters
-    ----------
-    WGraph : List[List[float]]
-        The weigth array use to determine the best path
-    nVille : int
-        The number of cities for our graph
-    u : int
-        The start vertice for the path
-    v : int
-        The end vertice for the path
-
-    Returns
-    -------
-    Tuple[float,Deque[int]]
-        A tuple containing the total size of the shortest path at index 0 and A queu representing the corresponding path (including the start and end vertice)
-
-    """
-    Visited = deque() #Priority queu of the already visited vertice
-    DistStart = [float('inf')]*(u) + [0.0] + [float('inf')]*(nVille-(u+1))#Array representing each vertice distance with the vertice u
-    copyWGraph = list(copy.deepcopy(WGraph)) #A copy of the weigthed array to process the algoritm
-    for i in range(nVille):
-        copyWGraph[i] = list(copyWGraph[i])
-
-
-    for i in range(len(copyWGraph)):#initialise every non-existing edge has infinite 
-        for j in range(i+1):
-            if(copyWGraph[i][j] == 0):
-                copyWGraph[i][j] = float('inf')
-                copyWGraph[j][i] = float('inf')
-    
-    while(v not in Visited):#Cycle through the shortest path from u and the already visited vertice until we visit the vertice v
-        MinWeigth = float('inf')
-        CurVertice = 0
-        for i,value in enumerate(DistStart): #We search the accessible vertice for the closer one
-            if(value < MinWeigth) and (i not in Visited):
-                MinWeigth = value
-                CurVertice = i
-        
-        Visited.append(CurVertice) # The vertice is then  considered visited
- 
-        for i in range(nVille):# We update every neighbour edge and vertice from visited vertice
-            if i not in Visited:
-                curValue = DistStart[CurVertice] + copyWGraph[CurVertice][i]
-                if(curValue < DistStart[i]):
-                    DistStart[i] = curValue
-                copyWGraph[CurVertice][i] = curValue
-                copyWGraph[i][CurVertice]
-        
-    Path = deque((v,))
-    cur = v
-    while(u not in Path):# We cycle through the shortest edge from ou vertice v to backtrack to our vertice u
-        MinWeigth = float('inf')
-        CurVertice = 0
-        for i,value in enumerate(copyWGraph[cur]):
-            if(value < MinWeigth) and (i not in Path):
-                MinWeigth = value
-                CurVertice = i
-        cur = CurVertice
-        Path.appendleft(cur)
-    return (DistStart[v],Path)
+from AlgoAV.Generation.GraphGen import WeigthSetFixed, GraphGen
 
 def DjiskaSSSP(WGraph:Tuple[Tuple[float]],nVille:int, u:int,ListDeli:List[int]) -> Tuple[float,List[Deque[int]]]:
     """
@@ -147,7 +82,7 @@ def DjiskaSSSP(WGraph:Tuple[Tuple[float]],nVille:int, u:int,ListDeli:List[int]) 
         AllPath.append(Path)
     return (DistStart,AllPath)
 
-def SetFullGraph(ListDeli:Tuple[int],nVille:int,WGraph : Tuple[Tuple[float]]) -> Tuple[List[List[Deque[int]]],Tuple[Tuple[float]]] : 
+def SetFullGraph(ListDeli:Tuple[int],nVille:int,WGraph:Tuple[Tuple[Tuple[float]]] , MaxTime : int) -> Tuple[List[List[Deque[int]]],Tuple[Tuple[float]]] : 
     """
     Create a complete Graph corresponding to the given incomplete graph 
 
@@ -168,23 +103,24 @@ def SetFullGraph(ListDeli:Tuple[int],nVille:int,WGraph : Tuple[Tuple[float]]) ->
         Weigthed graph of the full graph.
 
     """
-    EquivArray = [[deque() for _ in range(nVille)] for _ in range(nVille)]
-    WIntGraph =  [[0 for _ in range(nVille)] for _ in range(nVille)]
+    EquivArray = [[[deque() for _ in range(nVille)] for _ in range(nVille)]for _ in range(MaxTime)]
+    WIntGraph =  [[[0 for _ in range(nVille)] for _ in range(nVille)]for _ in range(MaxTime)]
     NewCityLength = len(ListDeli)
 
-    for i in ListDeli:
-        Size, Equiv= DjiskaSSSP(WGraph, nVille, i,ListDeli)
-        WIntGraph[i] = Size
-        EquivArray[i] = Equiv
-    for i in  range(nVille-1,-1,-1):
-        if i not in ListDeli:
-            WIntGraph.pop(i)
-            
-    for i in range(NewCityLength):
-        for j in range(nVille-1,-1,-1):
-            if j not in ListDeli:
-                WIntGraph[i].pop(j)
-        WIntGraph[i] = tuple(WIntGraph[i])
+    for y in range(MaxTime):
+        for i in ListDeli:
+            Size, Equiv= DjiskaSSSP(WGraph[y], nVille, i,ListDeli)
+            WIntGraph[y][i] = Size
+            EquivArray[y][i] = Equiv
+        for i in  range(nVille-1,-1,-1):
+            if i not in ListDeli:
+                WIntGraph[y].pop(i)
+                
+        for i in range(NewCityLength):
+            for j in range(nVille-1,-1,-1):
+                if j not in ListDeli:
+                    WIntGraph[y][i].pop(j)
+            WIntGraph[y][i] = tuple(WIntGraph[y][i])
 
     return  EquivArray , WIntGraph
      
