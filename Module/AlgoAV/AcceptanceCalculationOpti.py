@@ -25,10 +25,10 @@ if __name__ == "__main__":
     else:
         random.seed()
 
-    maxWeigth = 10
+    maxWeigth = 1000
 
     nb_steps_bar = NbTest
-    SizeEnumerate = [6]
+    SizeEnumerate = [10]
     nb_steps_bar *= len(SizeEnumerate)
     
     IterationRange = range(math.floor(SizeEnumerate[0]/4),(SizeEnumerate[0]*2),math.floor(SizeEnumerate[0]/4))
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         
         ListTest = []
         ListBorne = []
-        MaxTime = math.ceil(maxWeigth*(SizeTest**2-SizeTest))
+        MaxTime = 10
 
         for _ in range(NbTest):
             borne = None

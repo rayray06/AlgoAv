@@ -22,10 +22,10 @@ if __name__ == "__main__":
             progressbar.ETA(), ')\n',
             ]
     NbTest = 5
-    PourcentageCible = 111.33282999201296
+    PourcentageCible = 111.59236667394259
     seed = None
     minSize = 5
-    maxSize = 11
+    maxSize = 16
     stepSize = 1
     if seed is not None:
         random.seed(seed)
@@ -66,6 +66,8 @@ if __name__ == "__main__":
     BestCompositionsList = []
     BestMeanValuesList = []
     BestMeanDerivativeValuesList = []
+    maxWeigth = 1000
+    
     for SizeTest in SizeEnumerate:
 
         
@@ -73,9 +75,8 @@ if __name__ == "__main__":
         Compositions = []
         MeanValues = []
         DerivativeValues = []
-        maxWeigth = 3
 
-        MaxTime = math.ceil(maxWeigth*(SizeTest**2-SizeTest))
+        MaxTime = 10
 
         IteRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
         ColonySIzeRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
@@ -92,8 +93,6 @@ if __name__ == "__main__":
 
                 CityTotreat = len(ListDeliverieTreated)
                 Graph = GraphGen(SizeTest)
-
-                MaxTime = math.ceil(maxWeigth*(SizeTest**2))
 
                 WGraph = WeigthSetFixed(Graph,SizeTest,seed,maxWeigth,MaxTime)
                 
@@ -193,7 +192,7 @@ if __name__ == "__main__":
     connection.start_transaction()
     c = connection.cursor()
     for i in RowList:
-       c.execute("REPLACE INTO Param_2 VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",i)
+       c.execute("REPLACE INTO Param_2_1 VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",i)
     connection.commit()
     c.close()
     connection.close()

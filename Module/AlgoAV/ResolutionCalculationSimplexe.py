@@ -15,7 +15,7 @@ if __name__ == "__main__":
     
     Nb_Test = 5
     MinSize = 5
-    MaxSize = 26
+    MaxSize = 100
     StepSize = 10
     SizeRange = range(MinSize,MaxSize,StepSize)
 

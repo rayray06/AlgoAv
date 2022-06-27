@@ -28,8 +28,6 @@ def Borne(CitySize,WMat,MaxTime,StartingVertice):
     for n in range(CitySize) :
         prob += lpSum([[ StateMat[t,n,m] for m in range(CitySize)]for t in range(MaxTime)]) == 1,"All entered constraint "+str(n)
         prob += lpSum([[ StateMat[t,m,n] for m in range(CitySize)]for t in range(MaxTime)]) == 1,"All exited constraint "+str(n)
-    for t in range(MaxTime):
-        prob += lpSum([[ StateMat[t,n,m] for m in range(CitySize)]for n in range(CitySize)]) <= 1,"All Time-Space Consistency"+str(t)
 
     prob += lpSum([ StateMat[0,StartingVertice,m] for m in range(CitySize)]) == 1,"Start at Time 0 Consistency"+str(t)
 
@@ -41,12 +39,12 @@ def Borne(CitySize,WMat,MaxTime,StartingVertice):
     for t in range(MaxTime):
         for i in range(CitySize):
             for j in range(CitySize): # create a binary variable
-                if((t+math.floor(WMat[t][i][j]) < MaxTime) and (j != StartingVertice)):
-                    prob += StateMat[t,i,j] <= lpSum([StateMat[t+math.floor(WMat[t][i][j]),j,n] for n in range(CitySize)]),"No waiting Constraint"+str(i)+","+str(j)+","+str(t)
+                if(j != StartingVertice):
+                    prob += StateMat[t,i,j] <= lpSum([StateMat[(t+math.floor(WMat[t][i][j]))%MaxTime,j,n] for n in range(CitySize)]),"No waiting Constraint"+str(i)+","+str(j)+","+str(t)
     
     prob += lpSum([[ StateMat[t,m,m] for m in range(CitySize)] for t in range(MaxTime)]) == 0,"No loop constraint"
 
-    prob.solve(PULP_CBC_CMD(msg=0,timeLimit=MaxTime*10/27))
+    prob.solve(PULP_CBC_CMD(msg=0,timeLimit=MaxTime*CitySize*1/7))
     print(LpStatus[prob.status])
     return prob.objective.value() if (LpStatus[prob.status] == "Optimal") else None
 

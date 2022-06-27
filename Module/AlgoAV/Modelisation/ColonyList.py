@@ -103,10 +103,10 @@ def MoveAnts(Colony: ColonyType,WMapRef:Tuple[Tuple[Tuple[float]]],Alpha:float,B
         ant: FourmiType = Colony[2][antIndex]
         WMapCopy = [[[ WMapRef[t][i][j] if j != Colony[3] else 0 for j in range(Colony[0])] for i in range(Colony[0])]for t in range(MaxTime)]
         for i in range(Colony[5]): # We iterate until the arrive to their iteration limit (TTL)
-            NewVertice = ChoosePath(tuple(Colony[1][ant[0]]),Colony[0],tuple(WMapCopy[math.floor(ant[4])][ant[0]]),Alpha,Beta)
+            NewVertice = ChoosePath(tuple(Colony[1][ant[0]]),Colony[0],tuple(WMapCopy[ant[4]][ant[0]]),Alpha,Beta)
 
-            ant[2] += WMapRef[math.floor(ant[4])][ant[0]][NewVertice] # We add the path weigth to the total path length
-            ant[4] += math.floor(WMapRef[math.floor(ant[4])][ant[0]][NewVertice])
+            ant[2] += WMapRef[ant[4]][ant[0]][NewVertice] # We add the path weigth to the total path length
+            ant[4] = (ant[4]+math.floor(WMapRef[ant[4]][ant[0]][NewVertice]))%MaxTime
             ant[1].append(NewVertice) # We add the Vertice to the path
             ant[0] = NewVertice
             ant[3].append(ant[4])
@@ -114,10 +114,10 @@ def MoveAnts(Colony: ColonyType,WMapRef:Tuple[Tuple[Tuple[float]]],Alpha:float,B
                 for y in range(Colony[0]):
                     WMapCopy[t][y][NewVertice] = 0
                 
-        ant[2] += WMapRef[math.floor(ant[4])][ant[0]][Colony[3]] # We add the path weigth to the total path length
+        ant[2] += WMapRef[ant[4]][ant[0]][Colony[3]] # We add the path weigth to the total path length
         ant[1].append(Colony[3]) # We add the Vertice to the path
         
-        ant[4] += math.floor(WMapRef[math.floor(ant[4])][ant[0]][Colony[3]])
+        ant[4] = (ant[4]+math.floor(WMapRef[ant[4]][ant[0]][Colony[3]]))%MaxTime
         ant[3].append(ant[4])
 
         ant[0] = Colony[3]

@@ -15,8 +15,8 @@ if __name__ == "__main__":
     
     Nb_Test = 2
     MinSize = 5
-    MaxSize = 30
-    StepSize = 1
+    MaxSize = 225
+    StepSize = 25
     SizeRange = range(MinSize,MaxSize,StepSize)
 
     List_MeanResult = []
@@ -59,7 +59,7 @@ if __name__ == "__main__":
             ListDeliverieTreated = tuple(np.unique(ListDeliveries).tolist())
             CityTotreat = len(ListDeliverieTreated)
             Graph = GraphGen(nb_Cities)
-            MaxTime = math.ceil(maxWeigth*(nb_Cities**2-nb_Cities))
+            MaxTime = 10
 
             WGraph = WeigthSetFixed(Graph,nb_Cities,seed,maxWeigth,MaxTime)
             
@@ -68,7 +68,7 @@ if __name__ == "__main__":
             EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,nb_Cities,WGraph,MaxTime)
 
             IterationUsed = math.ceil(CityTotreat/4)
-            ColonySize = math.ceil(CityTotreat/4)
+            ColonySize = math.ceil(CityTotreat/2)
 
             print("\Generation time : "+str(process_time()-start)+" s")
             random.seed()
@@ -95,14 +95,14 @@ if __name__ == "__main__":
             OptimalPath = deque()
             StartValue = BestPath.popleft()
             EndValue = BestPath.popleft()
-            stepIndex = 0
+            stepIndex = BestPathTimeStep.popleft()
             while(len(BestPath)>0):
                 Equiv = copy.deepcopy(EquivArray[stepIndex][ListDeliverieTreated[StartValue]][ListDeliverieTreated[EndValue]])
                 while(len(Equiv)>1):
                     OptimalPath.append(Equiv.popleft())
                 StartValue = EndValue
                 EndValue = BestPath.popleft()
-                stepIndex += 1
+                stepIndex = BestPathTimeStep.popleft()
             Equiv = copy.deepcopy(EquivArray[stepIndex][ListDeliverieTreated[StartValue]][ListDeliverieTreated[EndValue]])
             while(len(Equiv)>0):
                 OptimalPath.append(Equiv.popleft())
