@@ -11,7 +11,7 @@ import random
 import copy
 from functools import lru_cache
 import numpy as np
-from AlgoAV.Generation.GraphGen import WeigthSet, GraphGen
+from AlgoAV.Generation.GraphGen import WeigthSetFixed, GraphGen
 
 def DjiskaSSSP(WGraph:Tuple[Tuple[float]],nVille:int, u:int,ListDeli:List[int]) -> Tuple[float,List[Deque[int]]]:
     """
@@ -82,7 +82,7 @@ def DjiskaSSSP(WGraph:Tuple[Tuple[float]],nVille:int, u:int,ListDeli:List[int]) 
         AllPath.append(Path)
     return (DistStart,AllPath)
 
-def SetFullGraph(ListDeli:Tuple[int],nVille:int,WGraph : Tuple[Tuple[float]]) -> Tuple[List[List[Deque[int]]],Tuple[Tuple[float]]] : 
+def SetFullGraph(ListDeli:Tuple[int],nVille:int,WGraph:Tuple[Tuple[Tuple[float]]] , MaxTime : int) -> Tuple[List[List[Deque[int]]],Tuple[Tuple[float]]] : 
     """
     Create a complete Graph corresponding to the given incomplete graph 
 
@@ -103,23 +103,24 @@ def SetFullGraph(ListDeli:Tuple[int],nVille:int,WGraph : Tuple[Tuple[float]]) ->
         Weigthed graph of the full graph.
 
     """
-    EquivArray = [[deque() for _ in range(nVille)] for _ in range(nVille)]
-    WIntGraph =  [[0 for _ in range(nVille)] for _ in range(nVille)]
+    EquivArray = [[[deque() for _ in range(nVille)] for _ in range(nVille)]for _ in range(MaxTime)]
+    WIntGraph =  [[[0 for _ in range(nVille)] for _ in range(nVille)]for _ in range(MaxTime)]
     NewCityLength = len(ListDeli)
 
-    for i in ListDeli:
-        Size, Equiv= DjiskaSSSP(WGraph, nVille, i,ListDeli)
-        WIntGraph[i] = Size
-        EquivArray[i] = Equiv
-    for i in  range(nVille-1,-1,-1):
-        if i not in ListDeli:
-            WIntGraph.pop(i)
-            
-    for i in range(NewCityLength):
-        for j in range(nVille-1,-1,-1):
-            if j not in ListDeli:
-                WIntGraph[i].pop(j)
-        WIntGraph[i] = tuple(WIntGraph[i])
+    for y in range(MaxTime):
+        for i in ListDeli:
+            Size, Equiv= DjiskaSSSP(WGraph[y], nVille, i,ListDeli)
+            WIntGraph[y][i] = Size
+            EquivArray[y][i] = Equiv
+        for i in  range(nVille-1,-1,-1):
+            if i not in ListDeli:
+                WIntGraph[y].pop(i)
+                
+        for i in range(NewCityLength):
+            for j in range(nVille-1,-1,-1):
+                if j not in ListDeli:
+                    WIntGraph[y][i].pop(j)
+            WIntGraph[y][i] = tuple(WIntGraph[y][i])
 
     return  EquivArray , WIntGraph
      

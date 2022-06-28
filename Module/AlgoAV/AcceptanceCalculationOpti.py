@@ -18,12 +18,14 @@ if __name__ == "__main__":
             progressbar.Percentage(),' | (',
             progressbar.ETA(), ')\n',
             ]
-    NbTest = 30
+    NbTest = 1
     seed = None
     if seed is not None:
         random.seed(seed)
     else:
         random.seed()
+
+    maxWeigth = 1000
 
     nb_steps_bar = NbTest
     SizeEnumerate = [10]
@@ -70,27 +72,30 @@ if __name__ == "__main__":
         Compositions = []
         MeanValues = []
         DerivativeValues = []
-        maxWeigth = 1000
         
         ListTest = []
         ListBorne = []
+        MaxTime = 10
+
         for _ in range(NbTest):
+            borne = None
+            while borne is None:
+                startingVertice = random.choice(range(SizeTest))
+                ListDeliveries = list(range(SizeTest))
 
-            startingVertice = random.choice(range(SizeTest))
-            ListDeliveries = list(range(SizeTest))
+                ListDeliverieInt = tuple(np.unique(ListDeliveries).tolist())
+                ListDeliverieTreated, ObjectGetPoint = ObjectAttribution(startingVertice,ListDeliverieInt,SizeTest)
+                CityTotreat = len(ListDeliverieTreated)
+                Graph = GraphGen(SizeTest)
 
-            ListDeliverieInt = tuple(np.unique(ListDeliveries).tolist())
-            ListDeliverieTreated, ObjectGetPoint = ObjectAttribution(startingVertice,ListDeliverieInt,SizeTest)
 
-            CityTotreat = len(ListDeliverieTreated)
-            Graph = GraphGen(SizeTest)
-            WGraph = WeigthSet(Graph,SizeTest,seed,maxWeigth)
-            
-            
-            EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph)
-            
+                WGraph = WeigthSetFixed(Graph,SizeTest,seed,maxWeigth,MaxTime)
+                
+                
+                EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph,MaxTime)
+                
+                borne = Borne(CityTotreat,WFullGraph,MaxTime,startingVertice)
             ListTest.append((WFullGraph,startingVertice,CityTotreat))
-            borne = Borne(CityTotreat,WFullGraph)
             ListBorne.append(borne)
         ListTest = tuple(ListTest)
         ListBorne = tuple(ListBorne)
@@ -126,7 +131,7 @@ if __name__ == "__main__":
                                 print(str(SizeTest)+" : "+str(Compo))
                                 for test in range(NbTest):
                                         value += 1
-                                        MinWeigth, BestPath = \
+                                        MinWeigth, BestPath, BestPathTimeStep = \
                                         FourmiOpti(ListTest[test][0],
                                                    ListTest[test][2],
                                                    Evap,
@@ -136,10 +141,13 @@ if __name__ == "__main__":
                                                    Deposit,
                                                    ListTest[test][1],
                                                    ColonySize,
-                                                   StartValue
+                                                   StartValue,
+                                                   MaxTime
                                                    )
                                         if(BestPath is not None) :
                                             CurValues.append((MinWeigth/ListBorne[test])*100)
+                                            if MinWeigth/ListBorne[test] < 1:
+                                                print()
                                 if len(CurValues) > 0:
                                     meanValue = np.mean(CurValues)
                                     print(meanValue)

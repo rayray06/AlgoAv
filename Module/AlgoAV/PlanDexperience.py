@@ -1,4 +1,4 @@
-from AlgoAV.Generation.GraphGen import GraphGen , WeigthSet
+from AlgoAV.Generation.GraphGen import GraphGen , WeigthSetFixed
 from AlgoAV.Processing.FourmiOpti import FourmiOpti
 from AlgoAV.Modelisation.FullGraph import SetFullGraph
 from AlgoAV.Processing.ExperiencePlan import Borne
@@ -21,11 +21,11 @@ if __name__ == "__main__":
             progressbar.Percentage(),' | (',
             progressbar.ETA(), ')\n',
             ]
-    NbTest = 1
-    PourcentageCible = 104.9879230895329
-    seed = 20
+    NbTest = 5
+    PourcentageCible = 111.59236667394259
+    seed = None
     minSize = 5
-    maxSize = 30
+    maxSize = 16
     stepSize = 1
     if seed is not None:
         random.seed(seed)
@@ -66,15 +66,20 @@ if __name__ == "__main__":
     BestCompositionsList = []
     BestMeanValuesList = []
     BestMeanDerivativeValuesList = []
+    maxWeigth = 1000
+    
     for SizeTest in SizeEnumerate:
-        IteRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
-        ColonySIzeRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
+
         
         
         Compositions = []
         MeanValues = []
         DerivativeValues = []
-        maxWeigth = 1000
+
+        MaxTime = 10
+
+        IteRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
+        ColonySIzeRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
         
         ListTest = []
         print("Generating graph of size : " + str(SizeTest))
@@ -88,12 +93,13 @@ if __name__ == "__main__":
 
                 CityTotreat = len(ListDeliverieTreated)
                 Graph = GraphGen(SizeTest)
-                WGraph = WeigthSet(Graph,SizeTest,seed,maxWeigth)
-                
-                
-                EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph)
 
-                borne = Borne(len(ListDeliverieTreated),WFullGraph)
+                WGraph = WeigthSetFixed(Graph,SizeTest,seed,maxWeigth,MaxTime)
+                
+                
+                EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph,MaxTime)
+
+                borne = Borne(len(ListDeliverieTreated),WFullGraph,MaxTime,startingVertice)
             
             ListTest.append((WFullGraph,startingVertice,CityTotreat,borne))
 
@@ -128,7 +134,7 @@ if __name__ == "__main__":
                                     print(str(SizeTest)+": "+str(Compo))
                                 for test in range(NbTest):
                                     if not(Sufficient):
-                                        MinWeigth, BestPath = \
+                                        MinWeigth, BestPath, StepList = \
                                         FourmiOpti(ListTest[test][0],
                                                 ListTest[test][2],
                                                 Evap,
@@ -138,7 +144,8 @@ if __name__ == "__main__":
                                                 Deposit,
                                                 ListTest[test][1],
                                                 ColonySize,
-                                                StartValue
+                                                StartValue,
+                                                MaxTime
                                                 )
                                         value += 1
                                         if(BestPath is not None) :
@@ -185,7 +192,7 @@ if __name__ == "__main__":
     connection.start_transaction()
     c = connection.cursor()
     for i in RowList:
-       c.execute("REPLACE INTO Param VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",i)
+       c.execute("REPLACE INTO Param_2_1 VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",i)
     connection.commit()
     c.close()
     connection.close()
