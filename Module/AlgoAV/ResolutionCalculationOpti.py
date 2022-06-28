@@ -15,7 +15,7 @@ if __name__ == "__main__":
     
     Nb_Test = 2
     MinSize = 5
-    MaxSize = 300
+    MaxSize = 350
     StepSize = 20
     SizeRange = range(MinSize,MaxSize,StepSize)
 
@@ -52,7 +52,6 @@ if __name__ == "__main__":
             random.seed()
 
         for test in range(Nb_Test):
-            start = process_time()
             print("=================================\nGeneration Full Graph ("+str(test)+","+str(nb_Cities)+")")
             startingVertice = random.choice(range(nb_Cities))
             ListDeliveries = list(range(nb_Cities))
@@ -63,6 +62,7 @@ if __name__ == "__main__":
             WGraph = WeigthSet(Graph,nb_Cities,seed,maxWeigth)
             
             
+            start = process_time()
             EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,nb_Cities,WGraph)
 
             IterationUsed = math.ceil(CityTotreat/4)
