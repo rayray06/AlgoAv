@@ -29,7 +29,7 @@ if __name__ == "__main__":
     SizeEnumerate = [10]
     nb_steps_bar *= len(SizeEnumerate)
     
-    IterationRange = range(math.floor(SizeEnumerate[0]/4),(SizeEnumerate[0]*2),math.floor(SizeEnumerate[0]/4))
+    IterationRange = range(2,100,25)
     nb_steps_bar *= len(IterationRange)
 
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     StartRange = range(100,110,10)
     nb_steps_bar *= len(StartRange)
 
-    ColonySIzeRange = range(math.floor(SizeEnumerate[0]/4),(SizeEnumerate[0]*2),math.floor(SizeEnumerate[0]/4))
+    ColonySIzeRange = range(2,100,25)
     nb_steps_bar *= len(ColonySIzeRange)
 
     print(nb_steps_bar)

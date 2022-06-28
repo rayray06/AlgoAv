@@ -36,5 +36,6 @@ def Borne(CitySize,WMat):
     prob += cont2
 
     prob.solve(PULP_CBC_CMD(msg=0,timeLimit=math.ceil(CitySize*60*1/4)))
+    print(LpStatus[prob.status])
     return prob.objective.value() if (LpStatus[prob.status] == "Optimal") else None
 
