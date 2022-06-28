@@ -13,9 +13,9 @@ import copy
 from time import process_time
 if __name__ == "__main__":
     
-    Nb_Test = 2
+    Nb_Test = 5
     MinSize = 5
-    MaxSize = 350
+    MaxSize = 260
     StepSize = 20
     SizeRange = range(MinSize,MaxSize,StepSize)
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         Deposit = 90
         StartValueDeposit = 90
         IterationUsed = 2
-        ColonySize = 13*nb_Cities
+        ColonySize = math.ceil(nb_Cities)
 
         seed = None
         if seed is not None:
