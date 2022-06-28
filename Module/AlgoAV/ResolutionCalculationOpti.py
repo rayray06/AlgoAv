@@ -44,6 +44,8 @@ if __name__ == "__main__":
         Beta = 0.5
         Deposit = 90
         StartValueDeposit = 90
+        IterationUsed = 2
+        ColonySize = 13*nb_Cities
 
         seed = None
         if seed is not None:
@@ -64,9 +66,6 @@ if __name__ == "__main__":
             
             start = process_time()
             EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,nb_Cities,WGraph)
-
-            IterationUsed = math.ceil(CityTotreat/4)
-            ColonySize = math.ceil(CityTotreat/4)
 
             print("\Generation time : "+str(process_time()-start)+" s")
             random.seed()

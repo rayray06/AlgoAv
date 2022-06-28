@@ -15,8 +15,8 @@ if __name__ == "__main__":
     
     Nb_Test = 5
     MinSize = 5
-    MaxSize = 26
-    StepSize = 10
+    MaxSize = 25
+    StepSize = 2
     SizeRange = range(MinSize,MaxSize,StepSize)
 
     List_MeanResult = []
