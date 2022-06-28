@@ -147,3 +147,40 @@ def WeigthSet(MatAdj:Tuple[Tuple[int]],nVille:int,seed:int,maxWeigth:float) -> T
         Matrice_Final[i] = tuple(Matrice_Final[i])
     Matrice_Final = tuple(Matrice_Final)
     return Matrice_Final
+
+def ObjectAttribution(Startingvertice:int,ListDeliveries: List[int], nVille:int) -> Tuple[Tuple[int],Tuple[int]]:
+    RecuperationPoint = random.choices(list(range(nVille)),k=nVille)
+
+    ListConcernedRecuperationPoint = []
+    for i in ListDeliveries:
+        ListConcernedRecuperationPoint.append(RecuperationPoint[i])
+    AlreadyVisited = [False]*len(ListDeliveries)
+    PathPossible = [ListDeliveries.index(Startingvertice)]
+    DeadEnd = False
+    Cur = PathPossible[0]
+    AlreadyVisited[Cur] = True
+    Done = False
+    while(not(Done)):
+        PathTest = ListConcernedRecuperationPoint[ListDeliveries.index(Cur)]
+        Done = all(AlreadyVisited)
+        if(PathTest in ListDeliveries):
+            if(AlreadyVisited[ListDeliveries.index(PathTest)]):
+                ListConcernedRecuperationPoint[ListDeliveries.index(Cur)] = random.choice([ i for i in range(nVille) if (i not in PathPossible) or (i not in ListDeliveries)]+ [Startingvertice])
+            else:
+                Cur = PathTest
+                AlreadyVisited[Cur] = True
+                PathPossible.append(Cur)
+        else:
+            Cur = AlreadyVisited.index(False)
+            AlreadyVisited[Cur] = True
+            PathPossible.append(Cur)
+            
+    NewListDelivery = copy.deepcopy(list(ListDeliveries))
+    NewListDelivery.extend([ i for i in np.unique(ListConcernedRecuperationPoint) if i not in ListDeliveries])
+
+    NewListDelivery = np.unique(ListDeliveries)
+    NewRecuperationPoint = [ ListConcernedRecuperationPoint[ListDeliveries.index(i)] if (i in ListDeliveries) else i for i in NewListDelivery]
+    return tuple(NewListDelivery),tuple(NewRecuperationPoint)
+        
+
+

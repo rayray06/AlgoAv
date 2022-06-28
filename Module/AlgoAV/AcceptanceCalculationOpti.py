@@ -1,4 +1,4 @@
-from AlgoAV.Generation.GraphGen import GraphGen , WeigthSet
+from AlgoAV.Generation.GraphGen import GraphGen , WeigthSet, ObjectAttribution
 from AlgoAV.Modelisation.FullGraph import SetFullGraph
 from AlgoAV.Processing.ExperiencePlan import Borne
 from AlgoAV.Processing.FourmiOpti import FourmiOpti
@@ -79,7 +79,9 @@ if __name__ == "__main__":
             startingVertice = random.choice(range(SizeTest))
             ListDeliveries = list(range(SizeTest))
 
-            ListDeliverieTreated = tuple(np.unique(ListDeliveries).tolist())
+            ListDeliverieInt = tuple(np.unique(ListDeliveries).tolist())
+            ListDeliverieTreated, ObjectGetPoint = ObjectAttribution(startingVertice,ListDeliverieInt,SizeTest)
+
             CityTotreat = len(ListDeliverieTreated)
             Graph = GraphGen(SizeTest)
             WGraph = WeigthSet(Graph,SizeTest,seed,maxWeigth)
