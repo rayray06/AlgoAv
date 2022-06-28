@@ -9,7 +9,7 @@ from collections import deque
 import random
 from functools import lru_cache
 
-FourmiType = List[Union[int,Deque[int],float,Deque[int],int]]
+FourmiType = List[Union[int,Deque[int],float,Deque[int],int,List[bool]]]
 """
 List representing an ant made of the following values:
 0 : CurrentPosition of the ant in the graph : integer,
@@ -17,9 +17,10 @@ List representing an ant made of the following values:
 2 : TotalLength of the chosen path
 3 : Each Time Step Followed 
 4 : Curent Time Step
+5 : A list to know if we already pass an vertice
 """
 
-def CreateFourmi(StartVertice:int) -> FourmiType:
+def CreateFourmi(StartVertice:int,ObjectDeliveryList:List[int]) -> FourmiType:
     """
     
     Create a ant object with the given parameter 
@@ -27,18 +28,19 @@ def CreateFourmi(StartVertice:int) -> FourmiType:
     ----------
     StartVertice : int
         The vertice from which the ant must start.
-
+    CitySize : int
+        The number of city to deliver
     Returns
     -------
     FourmiType
         The ant with the given parameters.
 
     """
-    return [StartVertice,deque((StartVertice,)),0,deque((0,)),0]
+    return [StartVertice,deque((StartVertice,)),0,deque((0,)),0,[ i == StartVertice for i in ObjectDeliveryList]]
     
 
 
-def ChoosePath(PheromonMapRow:Tuple[float],CitySize:int,WMapRow:Tuple[float],Alpha:float,Beta:float) -> int:
+def ChoosePath(PheromonMapRow:Tuple[float],CitySize:int,WMapRow:Tuple[float],Alpha:float,Beta:float,PathCanBeDeliver:List[bool]) -> int:
     """
     
     Choose the next vertice to go folling the given context parameters
@@ -54,7 +56,8 @@ def ChoosePath(PheromonMapRow:Tuple[float],CitySize:int,WMapRow:Tuple[float],Alp
         The paramater alpha used by the ants.
     Beta : float
         The parameter beta used by the ants.
-
+    PathCanBeDeliver : List[bool]
+        A list indicating whether the vertice has been crossed or not
     Returns
     -------
     int
@@ -62,7 +65,7 @@ def ChoosePath(PheromonMapRow:Tuple[float],CitySize:int,WMapRow:Tuple[float],Alp
 
     """
 
-    Choices = PathChoiceCached(WMapRow,CitySize,PheromonMapRow,Alpha,Beta)
+    Choices = PathChoiceCached(WMapRow,CitySize,PheromonMapRow,Alpha,Beta,tuple(PathCanBeDeliver))
     
     Choice = random.choices(range(CitySize),weights=Choices,k=1)[0]
 
@@ -96,7 +99,7 @@ def UpdatePheromon(Fourmi: FourmiType,PheromonMap: List[List[float]],Depo: float
     PheromonMap[Start][Next] += Depo/Fourmi[2]
     
 @lru_cache(maxsize=256)
-def PathChoiceCached(WMapRow: Tuple[float],MapSize: int,PheromonMapRow: Tuple[float],Alpha: float,Beta: float) -> List[float]:
+def PathChoiceCached(WMapRow: Tuple[float],MapSize: int,PheromonMapRow: Tuple[float],Alpha: float,Beta: float,PathCanBeDeliver:Tuple[bool]) -> List[float]:
     """
     
     Give the probability to choose a Vertice over another
@@ -113,6 +116,8 @@ def PathChoiceCached(WMapRow: Tuple[float],MapSize: int,PheromonMapRow: Tuple[fl
         The paramater alpha used by the ants.
     Beta : float
         The parameter beta used by the ants.
+    PathCanBeDeliver : Tuple[bool]
+        A list indicating whether the vertice has it's object retrieved
 
     Returns
     -------
@@ -122,7 +127,7 @@ def PathChoiceCached(WMapRow: Tuple[float],MapSize: int,PheromonMapRow: Tuple[fl
     """
     Choices = [0]*MapSize
     for i in range(MapSize):
-        if WMapRow[i] > 0:
+        if WMapRow[i] > 0 and PathCanBeDeliver[i]:
             Choices[i] = ((1/WMapRow[i])**Alpha)*(PheromonMapRow[i]**Beta)
         else:
             Choices[i] = 0 

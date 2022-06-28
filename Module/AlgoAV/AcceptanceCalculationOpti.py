@@ -1,4 +1,4 @@
-from AlgoAV.Generation.GraphGen import GraphGen , WeigthSet, ObjectAttribution
+from AlgoAV.Generation.GraphGen import GraphGen , WeigthSetFixed, ObjectAttribution
 from AlgoAV.Modelisation.FullGraph import SetFullGraph
 from AlgoAV.Processing.ExperiencePlan import Borne
 from AlgoAV.Processing.FourmiOpti import FourmiOpti
@@ -18,7 +18,7 @@ if __name__ == "__main__":
             progressbar.Percentage(),' | (',
             progressbar.ETA(), ')\n',
             ]
-    NbTest = 1
+    NbTest = 2
     seed = None
     if seed is not None:
         random.seed(seed)
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     maxWeigth = 1000
 
     nb_steps_bar = NbTest
-    SizeEnumerate = [10]
+    SizeEnumerate = [15]
     nb_steps_bar *= len(SizeEnumerate)
     
     IterationRange = range(math.floor(SizeEnumerate[0]/4),(SizeEnumerate[0]*2),math.floor(SizeEnumerate[0]/4))
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         
         ListTest = []
         ListBorne = []
-        MaxTime = 10
+        MaxTime = 3
 
         for _ in range(NbTest):
             borne = None
@@ -94,8 +94,8 @@ if __name__ == "__main__":
                 
                 EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph,MaxTime)
                 
-                borne = Borne(CityTotreat,WFullGraph,MaxTime,startingVertice)
-            ListTest.append((WFullGraph,startingVertice,CityTotreat))
+                borne = Borne(CityTotreat,WFullGraph,MaxTime,startingVertice,ObjectGetPoint)
+            ListTest.append((WFullGraph,startingVertice,CityTotreat,ObjectGetPoint))
             ListBorne.append(borne)
         ListTest = tuple(ListTest)
         ListBorne = tuple(ListBorne)
@@ -142,7 +142,8 @@ if __name__ == "__main__":
                                                    ListTest[test][1],
                                                    ColonySize,
                                                    StartValue,
-                                                   MaxTime
+                                                   MaxTime,
+                                                   ListTest[test][3]
                                                    )
                                         if(BestPath is not None) :
                                             CurValues.append((MinWeigth/ListBorne[test])*100)

@@ -2,7 +2,7 @@ from pulp import *
 import numpy as np
 import math
 
-def Borne(CitySize,WMat,MaxTime,StartingVertice):
+def Borne(CitySize,WMat,MaxTime,StartingVertice,RecuperationPoint):
     StateMat = {}
     OrderList = {}
     for t in range(MaxTime):
@@ -36,6 +36,10 @@ def Borne(CitySize,WMat,MaxTime,StartingVertice):
             if i != j and (i != 0 and j != 0):
                 prob += ( (OrderList[i] - OrderList[j]) + (CitySize - 1)*lpSum([StateMat[t,i, j] for t in range(MaxTime)]) ) <= (CitySize-2),"Start No sub loop "+str(i)+","+str(j)
 
+    for i in range(CitySize) :
+            if i != StartingVertice and RecuperationPoint[i] != StartingVertice:
+                prob += OrderList[i] >= OrderList[RecuperationPoint[i]] ,"Delivery Ordonnace "+str(i)
+
     for t in range(MaxTime):
         for i in range(CitySize):
             for j in range(CitySize): # create a binary variable
@@ -44,7 +48,7 @@ def Borne(CitySize,WMat,MaxTime,StartingVertice):
     
     prob += lpSum([[ StateMat[t,m,m] for m in range(CitySize)] for t in range(MaxTime)]) == 0,"No loop constraint"
 
-    prob.solve(PULP_CBC_CMD(msg=0,timeLimit=MaxTime*CitySize*1/7))
+    prob.solve(PULP_CBC_CMD(msg=1))
     print(LpStatus[prob.status])
     return prob.objective.value() if (LpStatus[prob.status] == "Optimal") else None
 

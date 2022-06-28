@@ -5,12 +5,12 @@ Created on Wed Jun 22 14:55:00 2022
 @author: ray-h
 """
 from AlgoAV.Modelisation.ColonyList import CreationColony,ColonyType,MoveAnts,SetNextStep
-from typing import Tuple,Deque
+from typing import Tuple,Deque,List
 import random
 
 
 
-def FourmiOpti(WMap:Tuple[Tuple[Tuple[float]]],CitySize:int,Evap:float,Alpha:float,Beta:float,IterationCount:int,Deposit:float,StartingVertice:int,ColonySize:int,StartValue:float,MaxTime:int) -> Tuple[float,Deque[int],Deque[int]] :
+def FourmiOpti(WMap:Tuple[Tuple[Tuple[float]]],CitySize:int,Evap:float,Alpha:float,Beta:float,IterationCount:int,Deposit:float,StartingVertice:int,ColonySize:int,StartValue:float,MaxTime:int,ObjectDeliveryList :List[int]) -> Tuple[float,Deque[int],Deque[int]] :
     """
     
 
@@ -36,17 +36,21 @@ def FourmiOpti(WMap:Tuple[Tuple[Tuple[float]]],CitySize:int,Evap:float,Alpha:flo
         The Number of ant to process
     StartValue : float
         The starting value for the pheromone quantity
+    MaxTime : int
+        The maximum number of steps
+    ObjectDeliveryList : List[int]
+        The position of the object to retrieve
 
     Returns
     -------
-    Tuple[float,Deque[int]] 
-        The best path found and its length
+    Tuple[float,Deque[int],Deque[int]] 
+        The best path found, its length and the step time coreesponding
 
     """
     random.seed()
-    ColonyO: ColonyType = CreationColony(WMap, CitySize, StartingVertice, ColonySize, StartValue)
+    ColonyO: ColonyType = CreationColony(WMap, CitySize, StartingVertice, ColonySize, StartValue,ObjectDeliveryList)
     for i in range(IterationCount):
-        MoveAnts(ColonyO,WMap,Alpha,Beta,MaxTime)
+        MoveAnts(ColonyO,WMap,Alpha,Beta,MaxTime,ObjectDeliveryList)
         if(i < IterationCount-1):
-            SetNextStep(ColonyO,Evap,Deposit)
-    return  ColonyO[6],ColonyO[7],ColonyO[8]
+            SetNextStep(ColonyO,Evap,Deposit,ObjectDeliveryList)
+    return ColonyO[6],ColonyO[7],ColonyO[8]
