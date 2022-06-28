@@ -163,23 +163,24 @@ def ObjectAttribution(Startingvertice:int,ListDeliveries: List[int], nVille:int)
     AlreadyVisited[Cur] = True
     Done = False
     while(not(Done)):
-        PathTest = ListConcernedRecuperationPoint[ListDeliveries.index(Cur)]
+        PathTest = ListConcernedRecuperationPoint[Cur]
         Done = all(AlreadyVisited)
         if(PathTest in ListDeliveries):
             if(AlreadyVisited[ListDeliveries.index(PathTest)]):
-                ListConcernedRecuperationPoint[ListDeliveries.index(Cur)] = random.choice([ i for i in range(nVille) if (i not in PathPossible) or (i not in ListDeliveries)]+ [Startingvertice])
+                ListConcernedRecuperationPoint[Cur] = random.choice([ i for i in range(nVille) if (i not in PathPossible) or (i not in ListDeliveries)]+ [Startingvertice])
             else:
-                Cur = PathTest
+                Cur = ListDeliveries.index(PathTest)
                 AlreadyVisited[Cur] = True
                 PathPossible.append(Cur)
-        else:
+        elif (not(Done)):
             Cur = AlreadyVisited.index(False)
             AlreadyVisited[Cur] = True
             PathPossible.append(Cur)
             
     NewListDelivery = copy.deepcopy(list(ListDeliveries))
-    NewListDelivery.extend([ i for i in np.unique(ListConcernedRecuperationPoint) if i not in ListDeliveries])
+    NewListDelivery.extend([ i for i in np.unique(ListConcernedRecuperationPoint) if i not in NewListDelivery])
 
-    NewListDelivery = np.unique(ListDeliveries)
+    NewListDelivery = np.unique(NewListDelivery)
     NewRecuperationPoint = [ ListConcernedRecuperationPoint[ListDeliveries.index(i)] if (i in ListDeliveries) else i for i in NewListDelivery]
+
     return tuple(NewListDelivery),tuple(NewRecuperationPoint)

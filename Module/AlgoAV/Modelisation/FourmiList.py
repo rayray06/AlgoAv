@@ -36,7 +36,8 @@ def CreateFourmi(StartVertice:int,ObjectDeliveryList:List[int]) -> FourmiType:
         The ant with the given parameters.
 
     """
-    return [StartVertice,deque((StartVertice,)),0,deque((0,)),0,[ i == StartVertice for i in ObjectDeliveryList]]
+    Deli = [ ObjectDeliveryList[i] == StartVertice or i == ObjectDeliveryList[i] for i in range(len(ObjectDeliveryList))]
+    return [StartVertice,deque((StartVertice,)),0,deque((0,)),0,Deli]
     
 
 

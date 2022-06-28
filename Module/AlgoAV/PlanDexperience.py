@@ -1,4 +1,4 @@
-from AlgoAV.Generation.GraphGen import GraphGen , WeigthSetFixed
+from AlgoAV.Generation.GraphGen import GraphGen , WeigthSetFixed, ObjectAttribution
 from AlgoAV.Processing.FourmiOpti import FourmiOpti
 from AlgoAV.Modelisation.FullGraph import SetFullGraph
 from AlgoAV.Processing.ExperiencePlan import Borne
@@ -22,10 +22,10 @@ if __name__ == "__main__":
             progressbar.ETA(), ')\n',
             ]
     NbTest = 5
-    PourcentageCible = 111.59236667394259
+    PourcentageCible = 110
     seed = None
     minSize = 5
-    maxSize = 16
+    maxSize = 15
     stepSize = 1
     if seed is not None:
         random.seed(seed)
@@ -37,11 +37,10 @@ if __name__ == "__main__":
     nb_steps_bar *= len(SizeEnumerate)
 
     # Iteration range(Ceil(Size/2),Size*3,Ceil(Size/10))
-    MaxCeiled = maxSize - ((maxSize-minSize)%stepSize)
-    nb_steps_bar *= (35/2)*(MaxCeiled-minSize)/stepSize
+    nb_steps_bar *= (35/2)*(maxSize-minSize)/stepSize
 
     # ColonySize range(Ceil(Size/2),Size*3,Ceil(Size/10))
-    nb_steps_bar *= (35/2)*(MaxCeiled-minSize)/stepSize
+    nb_steps_bar *= (35/2)*(maxSize-minSize)/stepSize
 
     
     ProportionRange = range(10,170,50)
@@ -76,7 +75,7 @@ if __name__ == "__main__":
         MeanValues = []
         DerivativeValues = []
 
-        MaxTime = 10
+        MaxTime = 5
 
         IteRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
         ColonySIzeRange = range(math.ceil(SizeTest/4),2*SizeTest,math.ceil(SizeTest/10))
@@ -88,8 +87,12 @@ if __name__ == "__main__":
             while borne is None:
                 print("New Generation test")
                 startingVertice = random.choice(range(SizeTest))
+                ListDeliveries = random.choices(range(SizeTest),k=math.ceil(SizeTest/2))#list(range(SizeTest))
+                ListDeliveries.append(startingVertice)
 
-                ListDeliverieTreated = tuple(range(SizeTest))
+
+                ListDeliverieInt = tuple(np.unique(ListDeliveries).tolist())
+                ListDeliverieTreated, ObjectGetPoint = ObjectAttribution(startingVertice,ListDeliverieInt,SizeTest)
 
                 CityTotreat = len(ListDeliverieTreated)
                 Graph = GraphGen(SizeTest)
@@ -99,9 +102,12 @@ if __name__ == "__main__":
                 
                 EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph,MaxTime)
 
-                borne = Borne(len(ListDeliverieTreated),WFullGraph,MaxTime,startingVertice)
+                startingVertice = ListDeliverieTreated.index(startingVertice)
+                UpdatedObjectGetPoint = [ ListDeliverieTreated.index(i) for i in ObjectGetPoint ]
+
+                borne = Borne(CityTotreat,WFullGraph,MaxTime,startingVertice,ListDeliverieTreated,ObjectGetPoint,CityTotreat)
             
-            ListTest.append((WFullGraph,startingVertice,CityTotreat,borne))
+            ListTest.append((WFullGraph,startingVertice,CityTotreat,borne,UpdatedObjectGetPoint))
 
 
         print("Starting Calculation for size of : "+str(SizeTest))
@@ -145,7 +151,8 @@ if __name__ == "__main__":
                                                 ListTest[test][1],
                                                 ColonySize,
                                                 StartValue,
-                                                MaxTime
+                                                MaxTime,
+                                                ListTest[test][4]
                                                 )
                                         value += 1
                                         if(BestPath is not None) :
@@ -192,7 +199,7 @@ if __name__ == "__main__":
     connection.start_transaction()
     c = connection.cursor()
     for i in RowList:
-       c.execute("REPLACE INTO Param_2_1 VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",i)
+       c.execute("REPLACE INTO Param_2_2_1 VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",i)
     connection.commit()
     c.close()
     connection.close()

@@ -1,4 +1,4 @@
-from AlgoAV.Generation.GraphGen import GraphGen , WeigthSetFixed
+from AlgoAV.Generation.GraphGen import GraphGen , WeigthSetFixed, ObjectAttribution
 from AlgoAV.Modelisation.FullGraph import SetFullGraph
 from AlgoAV.Processing.ExperiencePlan import Borne
 from AlgoAV.Processing.FourmiOpti import FourmiOpti
@@ -14,7 +14,7 @@ from time import process_time
 if __name__ == "__main__":
     
     Nb_Test = 2
-    MinSize = 5
+    MinSize = 10
     MaxSize = 225
     StepSize = 25
     SizeRange = range(MinSize,MaxSize,StepSize)
@@ -54,18 +54,26 @@ if __name__ == "__main__":
         for test in range(Nb_Test):
             print("=================================\nGeneration Full Graph ("+str(test)+","+str(nb_Cities)+")")
             startingVertice = random.choice(range(nb_Cities))
-            ListDeliveries = list(range(nb_Cities))
+            ListDeliveries = random.choices(range(nb_Cities),k=math.ceil(nb_Cities/2))#list(range(nb_Cities))
+            ListDeliveries.append(startingVertice)
 
-            ListDeliverieTreated = tuple(np.unique(ListDeliveries).tolist())
+
+            ListDeliverieInt = tuple(np.unique(ListDeliveries).tolist())
+            ListDeliverieTreated, ObjectGetPoint = ObjectAttribution(startingVertice,ListDeliverieInt,nb_Cities)
             CityTotreat = len(ListDeliverieTreated)
-            Graph = GraphGen(nb_Cities)
-            MaxTime = 10
 
-            WGraph = WeigthSetFixed(Graph,nb_Cities,seed,maxWeigth,MaxTime)
+            Graph = GraphGen(nb_Cities)
+
+            MaxTime = 10
             
+            
+            WGraph = WeigthSetFixed(Graph,nb_Cities,seed,maxWeigth,MaxTime)
             
             start = process_time()
             EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,nb_Cities,WGraph,MaxTime)
+
+            startingVertice = ListDeliverieTreated.index(startingVertice)
+            UpdatedObjectGetPoint = [ ListDeliverieTreated.index(i) for i in ObjectGetPoint ]
 
             IterationUsed = math.ceil(CityTotreat/4)
             ColonySize = math.ceil(CityTotreat/2)
@@ -77,8 +85,8 @@ if __name__ == "__main__":
 
             print("Starting Calculation")
             MinWeigth, BestPath, BestPathTimeStep = \
-            FourmiOpti(WFullGraph,
-                        nb_Cities,
+            FourmiOpti( WFullGraph,
+                        CityTotreat,
                         Evap,
                         Alpha,
                         Beta,
@@ -87,7 +95,8 @@ if __name__ == "__main__":
                         startingVertice,
                         ColonySize,
                         StartValueDeposit,
-                        MaxTime
+                        MaxTime,
+                        UpdatedObjectGetPoint
                         )
             print("The next to optimal path length is : ", MinWeigth)
             print("The optimal path is : ")
@@ -97,13 +106,13 @@ if __name__ == "__main__":
             EndValue = BestPath.popleft()
             stepIndex = BestPathTimeStep.popleft()
             while(len(BestPath)>0):
-                Equiv = copy.deepcopy(EquivArray[stepIndex][ListDeliverieTreated[StartValue]][ListDeliverieTreated[EndValue]])
+                Equiv = copy.deepcopy(EquivArray[stepIndex][StartValue][EndValue])
                 while(len(Equiv)>1):
                     OptimalPath.append(Equiv.popleft())
                 StartValue = EndValue
                 EndValue = BestPath.popleft()
                 stepIndex = BestPathTimeStep.popleft()
-            Equiv = copy.deepcopy(EquivArray[stepIndex][ListDeliverieTreated[StartValue]][ListDeliverieTreated[EndValue]])
+            Equiv = copy.deepcopy(EquivArray[stepIndex][StartValue][EndValue])
             while(len(Equiv)>0):
                 OptimalPath.append(Equiv.popleft())
             while(len(OptimalPath)>0):

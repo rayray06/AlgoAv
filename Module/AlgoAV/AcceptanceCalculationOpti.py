@@ -18,7 +18,7 @@ if __name__ == "__main__":
             progressbar.Percentage(),' | (',
             progressbar.ETA(), ')\n',
             ]
-    NbTest = 2
+    NbTest = 5
     seed = None
     if seed is not None:
         random.seed(seed)
@@ -75,13 +75,16 @@ if __name__ == "__main__":
         
         ListTest = []
         ListBorne = []
-        MaxTime = 3
+        MaxTime = 4
 
         for _ in range(NbTest):
             borne = None
+            UpdatedObjectGetPoint = None
             while borne is None:
                 startingVertice = random.choice(range(SizeTest))
-                ListDeliveries = list(range(SizeTest))
+                ListDeliveries = random.choices(range(SizeTest),k=math.ceil(SizeTest/2))#list(range(SizeTest))
+                ListDeliveries.append(startingVertice)
+
 
                 ListDeliverieInt = tuple(np.unique(ListDeliveries).tolist())
                 ListDeliverieTreated, ObjectGetPoint = ObjectAttribution(startingVertice,ListDeliverieInt,SizeTest)
@@ -93,9 +96,12 @@ if __name__ == "__main__":
                 
                 
                 EquivArray, WFullGraph = SetFullGraph(ListDeliverieTreated,SizeTest,WGraph,MaxTime)
-                
-                borne = Borne(CityTotreat,WFullGraph,MaxTime,startingVertice,ObjectGetPoint)
-            ListTest.append((WFullGraph,startingVertice,CityTotreat,ObjectGetPoint))
+
+                startingVertice = ListDeliverieTreated.index(startingVertice)
+                UpdatedObjectGetPoint = [ ListDeliverieTreated.index(i) for i in ObjectGetPoint ]
+
+                borne = Borne(CityTotreat,WFullGraph,MaxTime,startingVertice,ListDeliverieTreated,ObjectGetPoint,CityTotreat)
+            ListTest.append((WFullGraph,startingVertice,CityTotreat,UpdatedObjectGetPoint))
             ListBorne.append(borne)
         ListTest = tuple(ListTest)
         ListBorne = tuple(ListBorne)
@@ -147,8 +153,6 @@ if __name__ == "__main__":
                                                    )
                                         if(BestPath is not None) :
                                             CurValues.append((MinWeigth/ListBorne[test])*100)
-                                            if MinWeigth/ListBorne[test] < 1:
-                                                print()
                                 if len(CurValues) > 0:
                                     meanValue = np.mean(CurValues)
                                     print(meanValue)
