@@ -31,7 +31,7 @@ if __name__ == "__main__":
     SizeEnumerate = [10]
     nb_steps_bar *= len(SizeEnumerate)
     
-    IterationRange = range(2,100,10)
+    IterationRange = range(2,100,20)
     nb_steps_bar *= len(IterationRange)
 
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     StartRange = range(100,110,10)
     nb_steps_bar *= len(StartRange)
 
-    ColonySIzeRange = range(2,100,10)
+    ColonySIzeRange = range(2,100,20)
     nb_steps_bar *= len(ColonySIzeRange)
     MaxTime = 10
 
