@@ -13,7 +13,6 @@ def DisplayGraph(graph,FrontPath = [], FrontNode = [],EdgeWeigth = [],DisplayWei
     
     pos = nx.spring_layout(G)
     node_colors = ['green' if i in FrontNode else 'red' for i in range(len(G.nodes))]
-    print(FrontNode)
 
     edge_colors = ['green' if i in FrontPath else 'black' for i in G.edges]
 
