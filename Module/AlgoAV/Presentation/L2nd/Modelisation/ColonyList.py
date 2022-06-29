@@ -6,7 +6,7 @@ Created on Mon Jun 22 1:41 2022
 """
 
 from typing import List,Tuple,Deque,Union
-from AlgoAV.Modelisation.FourmiList import CreateFourmi,UpdatePheromon,FourmiType,ChoosePath
+from AlgoAV.Presentation.L2nd.Modelisation.FourmiList import CreateFourmi,UpdatePheromon,FourmiType,ChoosePath
 import math
 import copy
 

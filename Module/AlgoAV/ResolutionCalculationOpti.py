@@ -44,6 +44,9 @@ if __name__ == "__main__":
         Beta = 0.5
         Deposit = 90
         StartValueDeposit = 90
+        MaxTime = 10
+        IterationUsed = 2
+        ColonySize = math.ceil(nb_Cities)
 
         seed = None
         if seed is not None:
@@ -64,7 +67,6 @@ if __name__ == "__main__":
 
             Graph = GraphGen(nb_Cities)
 
-            MaxTime = 10
             
             
             WGraph = WeigthSetFixed(Graph,nb_Cities,seed,maxWeigth,MaxTime)
@@ -75,8 +77,6 @@ if __name__ == "__main__":
             startingVertice = ListDeliverieTreated.index(startingVertice)
             UpdatedObjectGetPoint = [ ListDeliverieTreated.index(i) for i in ObjectGetPoint ]
 
-            IterationUsed = math.ceil(CityTotreat/4)
-            ColonySize = math.ceil(CityTotreat/2)
 
             print("\Generation time : "+str(process_time()-start)+" s")
             random.seed()
