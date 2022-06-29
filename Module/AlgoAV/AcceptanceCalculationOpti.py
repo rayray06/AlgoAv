@@ -18,7 +18,7 @@ if __name__ == "__main__":
             progressbar.Percentage(),' | (',
             progressbar.ETA(), ')\n',
             ]
-    NbTest = 1
+    NbTest = 5
     seed = None
     if seed is not None:
         random.seed(seed)
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     SizeEnumerate = [10]
     nb_steps_bar *= len(SizeEnumerate)
     
-    IterationRange = range(math.floor(SizeEnumerate[0]/4),(SizeEnumerate[0]*2),math.floor(SizeEnumerate[0]/4))
+    IterationRange = range(2,100,10)
     nb_steps_bar *= len(IterationRange)
 
 
@@ -52,8 +52,9 @@ if __name__ == "__main__":
     StartRange = range(100,110,10)
     nb_steps_bar *= len(StartRange)
 
-    ColonySIzeRange = range(math.floor(SizeEnumerate[0]/4),(SizeEnumerate[0]*2),math.floor(SizeEnumerate[0]/4))
+    ColonySIzeRange = range(2,100,10)
     nb_steps_bar *= len(ColonySIzeRange)
+    MaxTime = 10
 
     print(nb_steps_bar)
     
@@ -75,7 +76,6 @@ if __name__ == "__main__":
         
         ListTest = []
         ListBorne = []
-        MaxTime = 10
 
         for _ in range(NbTest):
             borne = None
