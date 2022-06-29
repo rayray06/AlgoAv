@@ -13,10 +13,10 @@ import copy
 from time import process_time
 if __name__ == "__main__":
     
-    Nb_Test = 2
+    Nb_Test = 5
     MinSize = 5
-    MaxSize = 225
-    StepSize = 25
+    MaxSize = 260
+    StepSize = 20
     SizeRange = range(MinSize,MaxSize,StepSize)
 
     List_MeanResult = []
@@ -44,6 +44,8 @@ if __name__ == "__main__":
         Beta = 0.5
         Deposit = 90
         StartValueDeposit = 90
+        IterationUsed = 2
+        ColonySize = math.ceil(nb_Cities)
 
         seed = None
         if seed is not None:

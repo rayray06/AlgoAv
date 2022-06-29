@@ -36,13 +36,12 @@ if __name__ == "__main__":
     SizeEnumerate = range(minSize,maxSize,stepSize)
     nb_steps_bar *= len(SizeEnumerate)
 
-    # Iteration range(Ceil(Size/2),Size*3,Ceil(Size/10))
-    MaxCeiled = maxSize - ((maxSize-minSize)%stepSize)
-    nb_steps_bar *= (35/2)*(MaxCeiled-minSize)/stepSize
+    IteRange = range(2,30**2,10)
+    nb_steps_bar *= len(IteRange)
 
-    # ColonySize range(Ceil(Size/2),Size*3,Ceil(Size/10))
-    nb_steps_bar *= (35/2)*(MaxCeiled-minSize)/stepSize
 
+    ColonySIzeRange = range(2,30**2,10)
+    nb_steps_bar *= len(ColonySIzeRange)
     
     ProportionRange = range(10,170,50)
     nb_steps_bar *= len(ProportionRange)
@@ -69,7 +68,6 @@ if __name__ == "__main__":
     maxWeigth = 1000
     
     for SizeTest in SizeEnumerate:
-
         
         
         Compositions = []
@@ -128,9 +126,9 @@ if __name__ == "__main__":
 
                                 random.seed()
                                 CurValues = []
+                                Textbar.update(value)
                                 if not(Sufficient):
                                     Compo = (ItterationUsed,Alpha,Beta,Evap,Deposit,StartValue,ColonySize)
-                                    Textbar.update(value)
                                     print(str(SizeTest)+": "+str(Compo))
                                 for test in range(NbTest):
                                     if not(Sufficient):
@@ -147,11 +145,9 @@ if __name__ == "__main__":
                                                 StartValue,
                                                 MaxTime
                                                 )
-                                        value += 1
                                         if(BestPath is not None) :
                                             CurValues.append((MinWeigth/ListTest[test][3])*100)
-                                    else:
-                                        value += 1
+                                    value += 1
                                 if len(CurValues) > 0:
                                     meanValue = np.mean(CurValues)
                                     print(meanValue)
